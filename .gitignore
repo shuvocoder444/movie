@@ -1,10 +1,5 @@
-# Ignoring src and assets folders
+# Source assets included in git repository
 
-# Exclude everything from vendors except required fonts
-/src/assets/vendor/*
-!/src/assets/vendor/fonts
-/src/assets/vendor/fonts/flags/
-/src/assets/vendor/fonts/flag-icons.css
 
 # Ignoring static/assets folders
 ./assets/
