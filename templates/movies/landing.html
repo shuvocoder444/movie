@@ -174,7 +174,7 @@
       <div class="col-xl-3 col-lg-4 col-md-6">
         <div class="movie-card h-100 d-flex flex-column">
           <a href="{{ movie.get_absolute_url }}" class="movie-poster-wrap text-decoration-none">
-            <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='{% static \'img/elements/movie-placeholder.jpg\' %}'" loading="lazy" />
+            <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='{% static "img/elements/movie-placeholder.jpg" %}'" loading="lazy" />
             <div class="play-badge-overlay">
               <span class="badge bg-primary p-3 rounded-circle shadow-lg">
                 <i class="ti ti-player-play-filled fs-3 text-white"></i>
@@ -258,7 +258,7 @@
       <div class="col-xl-3 col-lg-4 col-md-6">
         <div class="movie-card h-100 d-flex flex-column">
           <a href="{{ movie.get_absolute_url }}" class="movie-poster-wrap text-decoration-none">
-            <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='{% static \'img/elements/movie-placeholder.jpg\' %}'" loading="lazy" />
+            <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='{% static "img/elements/movie-placeholder.jpg" %}'" loading="lazy" />
             <div class="play-badge-overlay">
               <span class="badge bg-warning p-3 rounded-circle shadow-lg text-dark">
                 <i class="ti ti-player-play-filled fs-3"></i>
