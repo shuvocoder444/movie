@@ -49,16 +49,57 @@
 
   <!-- Pagination -->
   {% if page_obj.has_other_pages %}
-  <nav class="mt-5">
-    <ul class="pagination justify-content-center">
+  <nav class="mt-5 mb-4">
+    <ul class="pagination justify-content-center flex-wrap gap-1">
       {% if page_obj.has_previous %}
-      <li class="page-item"><a class="page-link bg-dark border-secondary text-white" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+      <li class="page-item">
+        <a class="page-link px-3 fw-semibold" href="?page={{ page_obj.previous_page_number }}">&laquo; Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link px-3 text-muted">&laquo; Previous</span>
+      </li>
       {% endif %}
-      <li class="page-item active"><span class="page-link bg-primary border-primary">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+
+      {% if page_range.0 > 1 %}
+      <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+      {% if page_range.0 > 2 %}
+      <li class="page-item disabled"><span class="page-link px-2">&hellip;</span></li>
+      {% endif %}
+      {% endif %}
+
+      {% for num in page_range %}
+        {% if num == page_obj.number %}
+        <li class="page-item active" aria-current="page">
+          <span class="page-link fw-bold bg-primary border-primary">{{ num }}</span>
+        </li>
+        {% else %}
+        <li class="page-item">
+          <a class="page-link fw-semibold" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if page_range|last < page_obj.paginator.num_pages %}
+      {% if page_range|last < page_obj.paginator.num_pages|add:"-1" %}
+      <li class="page-item disabled"><span class="page-link px-2">&hellip;</span></li>
+      {% endif %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a></li>
+      {% endif %}
+
       {% if page_obj.has_next %}
-      <li class="page-item"><a class="page-link bg-dark border-secondary text-white" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+      <li class="page-item">
+        <a class="page-link px-3 fw-semibold" href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link px-3 text-muted">Next &raquo;</span>
+      </li>
       {% endif %}
     </ul>
+    <div class="text-center text-muted small mt-2">
+      Showing articles {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
+    </div>
   </nav>
   {% endif %}
 </div>

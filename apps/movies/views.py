@@ -30,6 +30,22 @@ class BaseMovieView:
         })
         return context
 
+    @staticmethod
+    def get_pagination_window(paginator, page_obj, window_size=10):
+        """Returns a sliding window of page numbers (e.g. 1..10) around the current page."""
+        total = paginator.num_pages
+        current = page_obj.number
+        if total <= window_size:
+            start = 1
+            end = total
+        else:
+            start = max(1, current - (window_size // 2))
+            end = start + window_size - 1
+            if end > total:
+                end = total
+                start = max(1, end - window_size + 1)
+        return range(start, end + 1)
+
 
 class MovieLandingView(BaseMovieView, View):
     """Movie Portal Landing Page."""
@@ -130,10 +146,11 @@ class MovieCatalogView(BaseMovieView, View):
         else:  # default 'views'
             movies = movies.order_by("-views", "-rating")
 
-        # Pagination
-        paginator = Paginator(movies, 18)
+        # Pagination: 50 videos per page as requested
+        paginator = Paginator(movies, 50)
         page_number = request.GET.get("page", 1)
         page_obj = paginator.get_page(page_number)
+        page_range = self.get_pagination_window(paginator, page_obj, window_size=10)
 
         categories = (
             Category.objects.annotate(movie_cnt=Count("movies"))
@@ -143,6 +160,7 @@ class MovieCatalogView(BaseMovieView, View):
 
         context.update({
             "page_obj": page_obj,
+            "page_range": page_range,
             "movies": page_obj.object_list,
             "categories": categories,
             "active_category": active_category,
@@ -211,12 +229,14 @@ class CreatorListView(BaseMovieView, View):
             .filter(num_movies__gt=0)
             .order_by("-num_movies")
         )
-        paginator = Paginator(creators, 24)
+        paginator = Paginator(creators, 50)
         page_number = request.GET.get("page", 1)
         page_obj = paginator.get_page(page_number)
+        page_range = self.get_pagination_window(paginator, page_obj, window_size=10)
 
         context.update({
             "page_obj": page_obj,
+            "page_range": page_range,
             "creators": page_obj.object_list,
         })
         return render(request, "movies/creator_list.html", context)
@@ -228,11 +248,18 @@ class CreatorDetailView(BaseMovieView, View):
         context = self.get_layout_context(request)
         creator = get_object_or_404(Profile, pk=pk)
         movies = creator.movies.all().order_by("-views")
+        
+        paginator = Paginator(movies, 50)
+        page_number = request.GET.get("page", 1)
+        page_obj = paginator.get_page(page_number)
+        page_range = self.get_pagination_window(paginator, page_obj, window_size=10)
 
         context.update({
             "creator": creator,
-            "movies": movies,
-            "movies_count": movies.count(),
+            "page_obj": page_obj,
+            "page_range": page_range,
+            "movies": page_obj.object_list,
+            "movies_count": paginator.count,
         })
         return render(request, "movies/creator_detail.html", context)
 
@@ -242,12 +269,14 @@ class BlogPostListView(BaseMovieView, View):
     def get(self, request):
         context = self.get_layout_context(request)
         blogs = BlogPost.objects.all().order_by("-created_at")
-        paginator = Paginator(blogs, 12)
+        paginator = Paginator(blogs, 20)
         page_number = request.GET.get("page", 1)
         page_obj = paginator.get_page(page_number)
+        page_range = self.get_pagination_window(paginator, page_obj, window_size=10)
 
         context.update({
             "page_obj": page_obj,
+            "page_range": page_range,
             "blogs": page_obj.object_list,
         })
         return render(request, "movies/blog_list.html", context)
