@@ -265,3 +265,66 @@ class BlogPost(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)[:200] or f"post-{self.id}"
         super().save(*args, **kwargs)
+
+
+class SiteSetting(models.Model):
+    """Global Website Settings & Customizations (Singleton)."""
+    site_name = models.CharField(max_length=150, default="IndiMusic TV", help_text="Website name")
+    tagline = models.CharField(max_length=255, default="We Are Music, Together.", help_text="Hero tagline / slogan")
+    logo = models.ImageField(upload_to="branding/", blank=True, null=True, help_text="Upload custom header/footer logo")
+    favicon = models.ImageField(upload_to="branding/", blank=True, null=True, help_text="Upload custom browser favicon (.ico/.png)")
+
+    # Contact Info
+    phone_number = models.CharField(max_length=50, blank=True, default="+1 (800) 555-INDI", help_text="Customer support phone number")
+    contact_email = models.EmailField(blank=True, default="support@indimusictv.com", help_text="Support / business email")
+    address = models.TextField(blank=True, default="123 Music Boulevard, Suite 500, New York, NY 10001, USA", help_text="Physical / studio address")
+
+    # Social Media Accounts
+    facebook_url = models.URLField(blank=True, default="https://facebook.com/indimusictv")
+    twitter_url = models.URLField(blank=True, default="https://twitter.com/indimusictv")
+    instagram_url = models.URLField(blank=True, default="https://instagram.com/indimusictv")
+    youtube_url = models.URLField(blank=True, default="https://youtube.com/@indimusictv")
+    tiktok_url = models.URLField(blank=True, default="")
+    linkedin_url = models.URLField(blank=True, default="")
+
+    # Header & Footer text
+    header_announcement = models.CharField(max_length=255, blank=True, default="", help_text="Optional banner notice at the top of the header")
+    footer_about_text = models.TextField(
+        blank=True,
+        default="IndiMusic TV is a premier music video and independent film streaming platform — 'We Are Music, Together.' Powered by over 2,780+ videos & films and 7,400+ creative artists and filmmakers.",
+        help_text="Short bio shown in the footer"
+    )
+    copyright_text = models.CharField(max_length=255, blank=True, default="© 2026 IndiMusic TV. All rights reserved.", help_text="Footer copyright line")
+
+    class Meta:
+        verbose_name = "Website Setting & Customization"
+        verbose_name_plural = "Website Settings & Customizations"
+
+    def __str__(self):
+        return f"{self.site_name} Configuration"
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+    @property
+    def logo_url(self):
+        if self.logo and hasattr(self.logo, "url"):
+            try:
+                return self.logo.url
+            except Exception:
+                pass
+        from django.templatetags.static import static
+        return static("img/branding/indimusic-logo.png")
+
+    @property
+    def favicon_url(self):
+        if self.favicon and hasattr(self.favicon, "url"):
+            try:
+                return self.favicon.url
+            except Exception:
+                pass
+        from django.templatetags.static import static
+        return static("img/favicon/favicon.ico")
+

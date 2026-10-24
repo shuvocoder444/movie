@@ -1,0 +1,103 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div id="content-main">
+
+  <!-- ==================== MODERN KPI DASHBOARD SUMMARY ==================== -->
+  <div style="margin-bottom: 25px;">
+    
+    <!-- Top Welcome Banner -->
+    <div style="background: linear-gradient(135deg, #090d16 0%, #1e293b 100%); color: #ffffff; padding: 22px 28px; border-radius: 14px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <h2 style="margin: 0 0 6px 0; font-size: 1.4rem; font-weight: 700; color: #ffffff;">Welcome to IndiMusic TV Management Portal</h2>
+        <p style="margin: 0; color: #94a3b8; font-size: 0.95rem;">Manage movies, artists, categories, comments and customize website branding in real-time.</p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <a href="{% url 'admin:movies_sitesetting_changelist' %}" style="background: #e11d48; color: #ffffff; padding: 9px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; box-shadow: 0 4px 12px rgba(225,29,72,0.35);">
+          <i class="ti ti-palette"></i> Customize Website
+        </a>
+        <a href="{% url 'admin:movies_movie_add' %}" style="background: rgba(255,255,255,0.12); color: #ffffff; padding: 9px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; border: 1px solid rgba(255,255,255,0.2);">
+          <i class="ti ti-plus"></i> Add Movie
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 Key Stat Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+      
+      <!-- Card 1: Movies -->
+      <a href="{% url 'admin:movies_movie_changelist' %}" style="text-decoration: none; color: inherit;">
+        <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px; transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(225, 29, 72, 0.1); color: #e11d48; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i class="ti ti-movie"></i>
+          </div>
+          <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.1;">2,783+</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 500;">Movies &amp; Videos</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 2: Profiles & Creators -->
+      <a href="{% url 'admin:movies_profile_changelist' %}" style="text-decoration: none; color: inherit;">
+        <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i class="ti ti-users"></i>
+          </div>
+          <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.1;">7,391+</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 500;">Members &amp; Artists</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 3: Comments -->
+      <a href="{% url 'admin:movies_moviecomment_changelist' %}" style="text-decoration: none; color: inherit;">
+        <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i class="ti ti-messages"></i>
+          </div>
+          <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.1;">8,401+</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 500;">Reviews &amp; Comments</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Card 4: Blogs & Editorials -->
+      <a href="{% url 'admin:movies_blogpost_changelist' %}" style="text-decoration: none; color: inherit;">
+        <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(99, 102, 241, 0.1); color: #6366f1; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i class="ti ti-news"></i>
+          </div>
+          <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.1;">501+</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 500;">News Articles</div>
+          </div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Quick Customizer Banner -->
+    <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="background: #0f172a; color: #fff; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+          <i class="ti ti-settings-2 fs-5"></i>
+        </span>
+        <div>
+          <strong style="color: #0f172a; font-size: 0.95rem;">Website Customizations (Logo, Favicon, Social, Contact &amp; Footer)</strong>
+          <div style="color: #64748b; font-size: 0.85rem;">You can update your site logo, favicon, phone number, address, and social links anytime.</div>
+        </div>
+      </div>
+      <a href="{% url 'admin:movies_sitesetting_changelist' %}" style="background: #0f172a; color: #ffffff; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+        Open Settings &raquo;
+      </a>
+    </div>
+
+  </div>
+
+  {{ block.super }}
+</div>
+{% endblock %}

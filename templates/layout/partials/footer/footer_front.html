@@ -3,17 +3,37 @@
 <footer class="landing-footer position-relative mt-5 pt-5 pb-4">
   <div class="container-xxl">
     <div class="row gy-4">
-      <!-- Col 1: Brand & Bio -->
+      <!-- Col 1: Brand, Bio & Social Links -->
       <div class="col-lg-4 col-md-6">
         <a href="{% url 'movie_landing' %}" class="app-brand-link mb-3 d-inline-flex align-items-center text-decoration-none">
           <span class="cinema-brand-logo-wrap p-1">
-            <img src="{% static 'img/branding/indimusic-logo.png' %}" alt="IndiMusic TV" style="height: 48px; object-fit: contain;" />
+            <img src="{{ site_settings.logo_url|default:'/static/img/branding/indimusic-logo.png' }}" alt="{{ site_settings.site_name|default:'IndiMusic TV' }}" style="height: 48px; object-fit: contain;" />
           </span>
         </a>
-        <p class="footer-desc small pe-lg-4 mt-2">
-          IndiMusic TV is a premier music video and independent film streaming platform — <em>"We Are Music, Together."</em> Powered by over 2,780+ videos &amp; films and 7,400+ creative artists and filmmakers.
+        <p class="footer-desc small pe-lg-4 mt-2 mb-3">
+          {{ site_settings.footer_about_text|default:"IndiMusic TV is a premier music video and independent film streaming platform — 'We Are Music, Together.' Powered by over 2,780+ videos & films and 7,400+ creative artists and filmmakers." }}
         </p>
-        <div class="d-flex align-items-center gap-2 mt-3">
+
+        <!-- Social Media Links (Editable via Admin) -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+          {% if site_settings.facebook_url %}
+            <a href="{{ site_settings.facebook_url }}" target="_blank" class="footer-genre-pill px-2 py-1 small text-decoration-none" title="Facebook"><i class="ti ti-brand-facebook fs-5"></i></a>
+          {% endif %}
+          {% if site_settings.twitter_url %}
+            <a href="{{ site_settings.twitter_url }}" target="_blank" class="footer-genre-pill px-2 py-1 small text-decoration-none" title="Twitter / X"><i class="ti ti-brand-x fs-5"></i></a>
+          {% endif %}
+          {% if site_settings.instagram_url %}
+            <a href="{{ site_settings.instagram_url }}" target="_blank" class="footer-genre-pill px-2 py-1 small text-decoration-none" title="Instagram"><i class="ti ti-brand-instagram fs-5"></i></a>
+          {% endif %}
+          {% if site_settings.youtube_url %}
+            <a href="{{ site_settings.youtube_url }}" target="_blank" class="footer-genre-pill px-2 py-1 small text-decoration-none" title="YouTube"><i class="ti ti-brand-youtube fs-5"></i></a>
+          {% endif %}
+          {% if site_settings.tiktok_url %}
+            <a href="{{ site_settings.tiktok_url }}" target="_blank" class="footer-genre-pill px-2 py-1 small text-decoration-none" title="TikTok"><i class="ti ti-brand-tiktok fs-5"></i></a>
+          {% endif %}
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
           <span class="footer-tech-badge px-2 py-1"><i class="ti ti-brand-youtube text-danger me-1"></i> HD Streaming</span>
           <span class="footer-tech-badge px-2 py-1"><i class="ti ti-cloud text-info me-1"></i> Backblaze B2</span>
         </div>
@@ -28,6 +48,7 @@
           <li class="mb-2"><a href="{% url 'movie_catalog' %}?sort=views" class="footer-nav-link small text-decoration-none">Trending</a></li>
           <li class="mb-2"><a href="{% url 'movie_catalog' %}?sort=rating" class="footer-nav-link small text-decoration-none">Top Rated</a></li>
           <li class="mb-2"><a href="{% url 'creator_list' %}" class="footer-nav-link small text-decoration-none">Creators</a></li>
+          <li class="mb-2"><a href="{% url 'blog_list' %}" class="footer-nav-link small text-decoration-none">News &amp; Reviews</a></li>
         </ul>
       </div>
 
@@ -44,16 +65,35 @@
         </div>
       </div>
 
-      <!-- Col 4: Cloud & Community -->
+      <!-- Col 4: Contact & Location Info -->
       <div class="col-lg-3 col-md-12">
-        <h6 class="footer-title mb-3 fw-bold">Storage &amp; Tech</h6>
-        <p class="footer-desc small">
-          Assets hosted on <strong>Backblaze B2</strong> (IndiMusicTVAssets) and YouTube CDN for ultra-fast, zero-buffer video playback.
-        </p>
+        <h6 class="footer-title mb-3 fw-bold">Contact &amp; Studio</h6>
+        
+        {% if site_settings.phone_number %}
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="ti ti-phone text-primary"></i>
+          <span class="footer-desc small">{{ site_settings.phone_number }}</span>
+        </div>
+        {% endif %}
+
+        {% if site_settings.contact_email %}
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="ti ti-mail text-danger"></i>
+          <span class="footer-desc small">{{ site_settings.contact_email }}</span>
+        </div>
+        {% endif %}
+
+        {% if site_settings.address %}
+        <div class="d-flex align-items-start gap-2 mb-3">
+          <i class="ti ti-map-pin text-warning mt-1"></i>
+          <span class="footer-desc small">{{ site_settings.address }}</span>
+        </div>
+        {% endif %}
+
         <div class="footer-status-card p-3">
           <div class="d-flex align-items-center justify-content-between">
-            <span class="small fw-semibold footer-status-text">Cloud Status</span>
-            <span class="badge bg-success-subtle text-success border border-success">Online &amp; Connected</span>
+            <span class="small fw-semibold footer-status-text">Cloud Storage</span>
+            <span class="badge bg-success-subtle text-success border border-success">Backblaze B2 Online</span>
           </div>
         </div>
       </div>
@@ -63,7 +103,7 @@
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
       <div class="footer-bottom-text small">
-        &copy; 2026 <strong>IndiMusic TV</strong>. All rights reserved. Powered by <strong>Vuexy &amp; Django</strong>.
+        {{ site_settings.copyright_text|default:"&copy; 2026 IndiMusic TV. All rights reserved." }}
       </div>
       <div class="d-flex align-items-center gap-3">
         <a href="{% url 'movie_catalog' %}" class="footer-nav-link small text-decoration-none">Privacy Policy</a>

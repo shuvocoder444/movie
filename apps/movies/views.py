@@ -6,9 +6,11 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.conf import settings
+from django.urls import reverse
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
-from .models import Movie, Category, Profile, MovieComment, BlogPost
+from .models import Movie, Category, Profile, MovieComment, BlogPost, SiteSetting
 
 
 
@@ -396,4 +398,84 @@ class UserLogoutView(View):
 
     def post(self, request):
         return self.get(request)
+
+
+class GoogleLoginView(BaseMovieView, View):
+    """Google / Gmail Authentication handler."""
+    def get(self, request):
+        client_id = getattr(settings, "GOOGLE_CLIENT_ID", "")
+        # If real OAuth client credentials are configured, redirect to Google OAuth
+        if client_id and client_id.strip() and client_id != "YOUR_GOOGLE_CLIENT_ID":
+            redirect_uri = request.build_absolute_uri(reverse("google_callback"))
+            google_auth_url = (
+                f"https://accounts.google.com/o/oauth2/v2/auth?"
+                f"client_id={client_id}&"
+                f"response_type=code&"
+                f"scope=openid%20email%20profile&"
+                f"redirect_uri={redirect_uri}&"
+                f"access_type=offline&prompt=select_account"
+            )
+            return redirect(google_auth_url)
+
+        # Standard / Instant Gmail sign in & registration
+        context = self.get_layout_context(request)
+        context["next"] = request.GET.get("next", "")
+        return render(request, "movies/gmail_login.html", context)
+
+    def post(self, request):
+        import re
+        gmail = request.POST.get("gmail", "").strip().lower()
+        full_name = request.POST.get("full_name", "").strip()
+
+        if not gmail or "@" not in gmail:
+            messages.error(request, "Please enter a valid Gmail address.")
+            return redirect("google_login")
+
+        # Extract base username from email address
+        uname = gmail.split("@")[0]
+        user = User.objects.filter(Q(email__iexact=gmail) | Q(username__iexact=uname)).first()
+
+        if not user:
+            # Check legacy Profile
+            profile = Profile.objects.filter(Q(email__iexact=gmail) | Q(nickname__iexact=uname)).first()
+            if profile and profile.user:
+                user = profile.user
+            elif profile:
+                user = User.objects.create_user(
+                    username=profile.nickname or uname[:150],
+                    email=gmail,
+                    first_name=full_name or profile.full_name or uname.replace(".", " ").title(),
+                )
+                profile.user = user
+                profile.save()
+            else:
+                # Create brand new user & profile
+                base_uname = uname
+                clean_uname = re.sub(r'[^a-zA-Z0-9_@+.-]', '_', base_uname)[:150]
+                counter = 1
+                while User.objects.filter(username__iexact=clean_uname).exists():
+                    clean_uname = f"{base_uname}_{counter}"[:150]
+                    counter += 1
+
+                user = User.objects.create_user(
+                    username=clean_uname,
+                    email=gmail,
+                    first_name=full_name or uname.replace(".", " ").title(),
+                )
+                max_id = Profile.objects.order_by("-id").values_list("id", flat=True).first() or 0
+                Profile.objects.create(
+                    id=max_id + 1,
+                    user=user,
+                    nickname=clean_uname,
+                    email=gmail,
+                    full_name=full_name or uname.replace(".", " ").title(),
+                )
+
+        login(request, user, backend="apps.movies.auth_backend.IndiMusicAuthBackend")
+        messages.success(request, f"Signed in with Google ({gmail}) successfully!")
+        next_url = request.POST.get("next", "")
+        if next_url and next_url.startswith("/"):
+            return redirect(next_url)
+        return redirect("movie_landing")
+
 

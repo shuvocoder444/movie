@@ -84,6 +84,7 @@ TEMPLATES = [
                 "config.context_processors.my_setting",
                 "config.context_processors.get_cookie",
                 "config.context_processors.environment",
+                "apps.movies.context_processors.site_settings_processor",
             ],
             "libraries": {
                 "theme": "web_project.template_tags.theme",
@@ -165,6 +166,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "src" / "assets",
 ]
 
+# Media Files (User and Admin Uploads: Logo, Favicon, etc.)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+
 # Default URL on which Django application runs for specific environment
 BASE_URL = os.environ.get("BASE_URL", default="http://127.0.0.1:8000")
 
@@ -194,4 +200,9 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = "user_login"
 LOGIN_REDIRECT_URL = "movie_landing"
 LOGOUT_REDIRECT_URL = "movie_landing"
+
+# Google / Gmail Authentication Settings
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+
 

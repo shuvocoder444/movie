@@ -11,6 +11,7 @@ from .views import (
     UserLoginView,
     UserRegisterView,
     UserLogoutView,
+    GoogleLoginView,
 )
 
 urlpatterns = [
@@ -27,5 +28,7 @@ urlpatterns = [
     path("login/", UserLoginView.as_view(), name="user_login"),
     path("register/", UserRegisterView.as_view(), name="user_register"),
     path("logout/", UserLogoutView.as_view(), name="user_logout"),
+    path("auth/google/", GoogleLoginView.as_view(), name="google_login"),
+    path("auth/google/callback/", GoogleLoginView.as_view(), name="google_callback"),
 ]
 

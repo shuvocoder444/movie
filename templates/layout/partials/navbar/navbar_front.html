@@ -7,7 +7,7 @@
       <!-- Menu logo wrapper: Start -->
       <a href="{% url 'movie_landing' %}" class="navbar-brand d-flex align-items-center py-0 me-4">
         <span class="cinema-brand-logo-wrap">
-          <img src="{% static 'img/branding/indimusic-logo.png' %}" alt="IndiMusic TV" class="cinema-brand-logo" />
+          <img src="{{ site_settings.logo_url|default:'/static/img/branding/indimusic-logo.png' }}" alt="{{ site_settings.site_name|default:'IndiMusic TV' }}" class="cinema-brand-logo" />
         </span>
       </a>
       <!-- Menu logo wrapper: End -->

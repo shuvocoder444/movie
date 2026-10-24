@@ -13,7 +13,11 @@
     <!-- Canonical SEO -->
     <link rel="canonical" href="{% get_theme_variables 'product_page' %}">
     <!-- Favicon -->
+    {% if site_settings and site_settings.favicon %}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ site_settings.favicon.url }}" />
+    {% else %}
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon/favicon.ico' %}" />
+    {% endif %}
 
     <!-- Include the styles partial -->
     {% include is_front|yesno:"./partials/styles_front.html,./partials/styles.html" %}
@@ -31,7 +35,12 @@
 
   <body>
 
-    
+    {% if site_settings and site_settings.header_announcement %}
+    <div class="py-2 px-3 text-center small fw-semibold text-white d-flex align-items-center justify-content-center gap-2" style="background: linear-gradient(90deg, #e11d48, #be123c); z-index: 1099; position: relative;">
+      <i class="ti ti-bell-ringing"></i> {{ site_settings.header_announcement }}
+    </div>
+    {% endif %}
+
     <!-- beautify ignore:end -->
 
     {% block layout %}
