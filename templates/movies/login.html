@@ -1,0 +1,128 @@
+{% extends layout_path %}
+{% load static %}
+
+{% block title %}Sign In | IndiMusic TV{% endblock title %}
+
+{% block content %}
+<div class="container-xxl py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5 col-xl-4">
+
+      <!-- Login Card -->
+      <div class="card shadow-lg p-4 p-md-5" style="border-radius: 18px;">
+        
+        <!-- Logo & Header -->
+        <div class="text-center mb-4">
+          <a href="{% url 'movie_landing' %}" class="d-inline-block mb-3">
+            <span class="cinema-brand-logo-wrap p-1">
+              <img src="{% static 'img/branding/indimusic-logo.png' %}" alt="IndiMusic TV" style="height: 46px; object-fit: contain;" />
+            </span>
+          </a>
+          <h4 class="fw-bold mb-1">Welcome to IndiMusic TV! 👋</h4>
+          <p class="text-muted small">Sign in with your username or email address</p>
+        </div>
+
+        <!-- Alert Messages -->
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show small py-2 px-3 mb-4" role="alert">
+              {{ msg }}
+              <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <!-- Login Form -->
+        <form method="POST" action="{% url 'user_login' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next }}" />
+
+          <div class="mb-3">
+            <label for="username" class="form-label fw-semibold small">Username or Email</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="ti ti-user"></i></span>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="username" 
+                name="username" 
+                value="{{ username|default:'' }}" 
+                placeholder="Enter your nickname or email" 
+                required 
+                autofocus 
+              />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <label for="password" class="form-label fw-semibold small mb-0">Password</label>
+              <a href="javascript:void(0);" class="small text-decoration-none text-muted" onclick="alert('Please contact support or enter your existing account password.');">
+                Forgot password?
+              </a>
+            </div>
+            <div class="input-group mt-1">
+              <span class="input-group-text"><i class="ti ti-lock"></i></span>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="password" 
+                name="password" 
+                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" 
+                required 
+              />
+              <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                <i class="ti ti-eye" id="togglePasswordIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-4 form-check">
+            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" value="1" checked>
+            <label class="form-check-label small" for="remember_me">Remember me</label>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow d-flex align-items-center justify-content-center gap-2">
+            <i class="ti ti-login"></i> Sign In
+          </button>
+        </form>
+
+        <p class="text-center small mt-4 mb-0">
+          <span class="text-muted">New to IndiMusic TV?</span>
+          <a href="{% url 'user_register' %}" class="fw-semibold text-primary text-decoration-none ms-1">
+            Create an account
+          </a>
+        </p>
+
+        <!-- Help for Database Migrated Users -->
+        <div class="mt-4 pt-3 border-top text-center" style="border-color: var(--cp-border) !important;">
+          <small class="text-muted d-block" style="font-size: 11px;">
+            <i class="ti ti-shield-check text-success me-1"></i>
+            Existing <strong>7,391 database members</strong> can sign in directly using their previous nickname or email &amp; password.
+          </small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleBtn = document.getElementById('togglePassword');
+  const pwdInput = document.getElementById('password');
+  const icon = document.getElementById('togglePasswordIcon');
+  if (toggleBtn && pwdInput) {
+    toggleBtn.addEventListener('click', function() {
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        icon.className = 'ti ti-eye-off';
+      } else {
+        pwdInput.type = 'password';
+        icon.className = 'ti ti-eye';
+      }
+    });
+  }
+});
+</script>
+{% endblock content %}

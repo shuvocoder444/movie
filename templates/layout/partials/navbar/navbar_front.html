@@ -77,12 +77,53 @@
             <i class="ti ti-moon" id="themeToggleIcon"></i>
           </button>
 
-          <a href="{% url 'movie_catalog' %}?sort=rating" class="btn btn-outline-warning btn-sm d-none d-sm-inline-flex align-items-center">
-            <i class="ti ti-star-filled me-1"></i> Top Rated
-          </a>
-          <a href="{% url 'movie_catalog' %}" class="btn btn-primary btn-sm d-inline-flex align-items-center shadow">
-            <i class="ti ti-player-play-filled me-1"></i> Watch Now
-          </a>
+          {% if request.user.is_authenticated %}
+            <!-- User Dropdown Menu -->
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-primary dropdown-toggle d-flex align-items-center gap-2 py-1 px-2" type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="badge bg-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                  <i class="ti ti-user fs-6 text-white"></i>
+                </span>
+                <span class="fw-semibold d-none d-md-inline" style="color: var(--cp-text-primary);">
+                  {{ request.user.first_name|default:request.user.username|truncatechars:15 }}
+                </span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 py-2" aria-labelledby="userMenuBtn" style="background-color: var(--cp-bg-card); border: 1px solid var(--cp-border) !important;">
+                <li class="px-3 py-2 border-bottom" style="border-color: var(--cp-border) !important;">
+                  <div class="fw-bold" style="color: var(--cp-text-primary);">{{ request.user.first_name|default:request.user.username }}</div>
+                  <small class="text-muted text-truncate d-block" style="max-width: 180px;">{{ request.user.email }}</small>
+                </li>
+                {% if request.user.profile %}
+                <li>
+                  <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{% url 'creator_detail' request.user.profile.id %}" style="color: var(--cp-text-primary);">
+                    <i class="ti ti-user-check text-primary"></i> My Creator Profile
+                  </a>
+                </li>
+                {% endif %}
+                {% if request.user.is_staff %}
+                <li>
+                  <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{% url 'admin:index' %}" target="_blank" style="color: var(--cp-text-primary);">
+                    <i class="ti ti-settings text-warning"></i> Admin Panel
+                  </a>
+                </li>
+                {% endif %}
+                <li><hr class="dropdown-divider my-1" style="border-color: var(--cp-border) !important;"></li>
+                <li>
+                  <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-danger" href="{% url 'user_logout' %}">
+                    <i class="ti ti-logout"></i> Sign Out
+                  </a>
+                </li>
+              </ul>
+            </div>
+          {% else %}
+            <!-- Sign In & Register Buttons -->
+            <a href="{% url 'user_login' %}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center">
+              <i class="ti ti-login me-1"></i> Sign In
+            </a>
+            <a href="{% url 'user_register' %}" class="btn btn-sm btn-primary d-none d-sm-inline-flex align-items-center shadow">
+              <i class="ti ti-user-plus me-1"></i> Register
+            </a>
+          {% endif %}
         </div>
       </div>
     </nav>

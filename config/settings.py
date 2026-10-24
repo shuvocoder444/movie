@@ -184,3 +184,14 @@ BACKBLAZE_B2_BASE_URL = os.environ.get(
     "BACKBLAZE_B2_BASE_URL",
     default="https://f001.backblazeb2.com/file/IndiMusicTVAssets"
 )
+
+# Authentication Configuration
+AUTHENTICATION_BACKENDS = [
+    "apps.movies.auth_backend.IndiMusicAuthBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+LOGIN_URL = "user_login"
+LOGIN_REDIRECT_URL = "movie_landing"
+LOGOUT_REDIRECT_URL = "movie_landing"
+

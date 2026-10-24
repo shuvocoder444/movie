@@ -8,6 +8,9 @@ from .views import (
     BlogPostListView,
     BlogPostDetailView,
     quick_search_api,
+    UserLoginView,
+    UserRegisterView,
+    UserLogoutView,
 )
 
 urlpatterns = [
@@ -21,4 +24,8 @@ urlpatterns = [
     path("blogs/<int:pk>/", BlogPostDetailView.as_view(), name="blog_detail"),
     path("blogs/<int:pk>/<slug:slug>/", BlogPostDetailView.as_view(), name="blog_detail_slug"),
     path("api/search/", quick_search_api, name="quick_search_api"),
+    path("login/", UserLoginView.as_view(), name="user_login"),
+    path("register/", UserRegisterView.as_view(), name="user_register"),
+    path("logout/", UserLogoutView.as_view(), name="user_logout"),
 ]
+

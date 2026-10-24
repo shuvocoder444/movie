@@ -1,14 +1,18 @@
 import re
 from datetime import datetime, timezone
 from django.db import models
+from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.text import slugify
 
 
 class Profile(models.Model):
     id = models.IntegerField(primary_key=True)
-    nickname = models.CharField(max_length=150, default="")
-    email = models.CharField(max_length=255, blank=True, default="")
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="profile")
+    nickname = models.CharField(max_length=150, default="", db_index=True)
+    email = models.CharField(max_length=255, blank=True, default="", db_index=True)
+    password_hash = models.CharField(max_length=128, blank=True, default="")
+    salt = models.CharField(max_length=32, blank=True, default="")
     headline = models.CharField(max_length=255, blank=True, default="")
     description = models.TextField(blank=True, default="")
     country = models.CharField(max_length=100, blank=True, default="")

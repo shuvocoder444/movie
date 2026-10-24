@@ -3,9 +3,13 @@ from django.views.generic import View, TemplateView, DetailView, ListView
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.http import JsonResponse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib import messages
 from web_project import TemplateLayout
 from web_project.template_helpers.theme import TemplateHelper
 from .models import Movie, Category, Profile, MovieComment, BlogPost
+
 
 
 class BaseMovieView:
@@ -20,7 +24,7 @@ class BaseMovieView:
             "is_navbar": True,
             "is_footer": True,
             "content_layout": "wide",
-            "style": "dark",  # Cinematic dark theme for movie experience!
+            "style": "light",  # Default light (sada) mode with cinematic dark toggle!
         })
         return context
 
@@ -285,3 +289,111 @@ def quick_search_api(request):
         })
 
     return JsonResponse({"results": results})
+
+
+class UserLoginView(BaseMovieView, View):
+    """User Login supporting both legacy 7,391 database users and new users."""
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect("movie_landing")
+        context = self.get_layout_context(request)
+        context["next"] = request.GET.get("next", "")
+        return render(request, "movies/login.html", context)
+
+    def post(self, request):
+        username_or_email = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+        remember_me = request.POST.get("remember_me")
+        next_url = request.POST.get("next", "")
+
+        user = authenticate(request, username=username_or_email, password=password)
+        if user is not None:
+            login(request, user)
+            if not remember_me:
+                request.session.set_expiry(0)
+            else:
+                request.session.set_expiry(1209600)  # 2 weeks
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+            if next_url and next_url.startswith("/"):
+                return redirect(next_url)
+            return redirect("movie_landing")
+        else:
+            messages.error(request, "Invalid username/email or password. Please try again.")
+            context = self.get_layout_context(request)
+            context["username"] = username_or_email
+            context["next"] = next_url
+            return render(request, "movies/login.html", context)
+
+
+class UserRegisterView(BaseMovieView, View):
+    """New User Registration."""
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect("movie_landing")
+        context = self.get_layout_context(request)
+        return render(request, "movies/register.html", context)
+
+    def post(self, request):
+        username = request.POST.get("username", "").strip()
+        email = request.POST.get("email", "").strip().lower()
+        full_name = request.POST.get("full_name", "").strip()
+        password = request.POST.get("password", "")
+        confirm_password = request.POST.get("confirm_password", "")
+
+        context = self.get_layout_context(request)
+        context.update({"username": username, "email": email, "full_name": full_name})
+
+        # Basic validations
+        if not username or not email or not password:
+            messages.error(request, "All required fields must be filled.")
+            return render(request, "movies/register.html", context)
+
+        if len(password) < 6:
+            messages.error(request, "Password must be at least 6 characters.")
+            return render(request, "movies/register.html", context)
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(request, "movies/register.html", context)
+
+        if User.objects.filter(username__iexact=username).exists() or Profile.objects.filter(nickname__iexact=username).exists():
+            messages.error(request, "Username is already taken. Please choose another.")
+            return render(request, "movies/register.html", context)
+
+        if User.objects.filter(email__iexact=email).exists() or Profile.objects.filter(email__iexact=email).exists():
+            messages.error(request, "An account with this email already exists.")
+            return render(request, "movies/register.html", context)
+
+        # Create Django User
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=full_name[:150] or username,
+        )
+
+        # Find next available Profile ID
+        max_id = Profile.objects.order_by("-id").values_list("id", flat=True).first() or 0
+        profile = Profile.objects.create(
+            id=max_id + 1,
+            user=user,
+            nickname=username,
+            email=email,
+            full_name=full_name or username,
+        )
+
+        login(request, user)
+        messages.success(request, f"Welcome to IndiMusic TV, {user.first_name or user.username}! Your account has been created.")
+        return redirect("movie_landing")
+
+
+class UserLogoutView(View):
+    """User Logout."""
+    def get(self, request):
+        logout(request)
+        messages.info(request, "You have been signed out.")
+        return redirect("movie_landing")
+
+    def post(self, request):
+        return self.get(request)
+
