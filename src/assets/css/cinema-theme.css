@@ -24,7 +24,18 @@ html.light-style {
   --cp-input-border: #cbd5e1;
   --cp-input-text: #0a0e1a;
   --cp-card-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-  --cp-footer-bg: #090d16;
+  --cp-footer-bg: #ffffff;
+  --cp-footer-border: #e2e8f0;
+  --cp-footer-title: #0a0e1a;
+  --cp-footer-text: #334155;
+  --cp-footer-muted: #64748b;
+  --cp-footer-link: #1e293b;
+  --cp-footer-link-hover: #e11d48;
+  --cp-footer-badge-bg: #f1f5f9;
+  --cp-footer-badge-text: #0a0e1a;
+  --cp-footer-badge-border: #cbd5e1;
+  --cp-footer-card-bg: #f8fafc;
+  --cp-footer-card-border: #e2e8f0;
   --cp-pill-bg: #f1f5f9;
   --cp-pill-text: #0a0e1a;
   --cp-pill-border: #cbd5e1;
@@ -53,7 +64,18 @@ html.dark-style {
   --cp-input-border: rgba(255, 255, 255, 0.2);
   --cp-input-text: #ffffff;
   --cp-card-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  --cp-footer-bg: #05070d;
+  --cp-footer-bg: #090d16;
+  --cp-footer-border: rgba(255, 255, 255, 0.12);
+  --cp-footer-title: #ffffff;
+  --cp-footer-text: #cbd5e1;
+  --cp-footer-muted: #94a3b8;
+  --cp-footer-link: #f1f5f9;
+  --cp-footer-link-hover: #fb7185;
+  --cp-footer-badge-bg: #162033;
+  --cp-footer-badge-text: #ffffff;
+  --cp-footer-badge-border: rgba(255, 255, 255, 0.16);
+  --cp-footer-card-bg: #121826;
+  --cp-footer-card-border: rgba(255, 255, 255, 0.12);
   --cp-pill-bg: #1a2234;
   --cp-pill-text: #ffffff;
   --cp-pill-border: rgba(255, 255, 255, 0.16);
@@ -312,26 +334,89 @@ a.movie-title:hover {
   color: #ffffff !important;
 }
 
-/* 10. Footer */
+/* 10. Footer Comprehensive Theme Adaptation */
 .landing-footer {
   background-color: var(--cp-footer-bg) !important;
-  border-top: 1px solid var(--cp-border) !important;
-  color: #cbd5e1 !important;
+  border-top: 1px solid var(--cp-footer-border) !important;
+  color: var(--cp-footer-text) !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04) !important;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
-.landing-footer h6,
 .landing-footer .footer-title {
+  color: var(--cp-footer-title) !important;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+
+.landing-footer .footer-desc {
+  color: var(--cp-footer-text) !important;
+  line-height: 1.65;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.landing-footer .footer-nav-link {
+  color: var(--cp-footer-link) !important;
+  font-weight: 500;
+  font-size: 0.92rem;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.landing-footer .footer-nav-link:hover {
+  color: var(--cp-footer-link-hover) !important;
+  transform: translateX(3px);
+}
+
+.landing-footer .footer-tech-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--cp-footer-badge-bg) !important;
+  color: var(--cp-footer-badge-text) !important;
+  border: 1px solid var(--cp-footer-badge-border) !important;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.landing-footer .footer-genre-pill {
+  display: inline-block;
+  background-color: var(--cp-footer-badge-bg) !important;
+  color: var(--cp-footer-badge-text) !important;
+  border: 1px solid var(--cp-footer-badge-border) !important;
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.landing-footer .footer-genre-pill:hover {
+  background-color: var(--cp-footer-link-hover) !important;
   color: #ffffff !important;
+  border-color: var(--cp-footer-link-hover) !important;
+  transform: translateY(-2px);
 }
 
-.landing-footer a {
-  color: #94a3b8 !important;
-  transition: color 0.2s ease;
+.landing-footer .footer-status-card {
+  background-color: var(--cp-footer-card-bg) !important;
+  border: 1px solid var(--cp-footer-card-border) !important;
+  border-radius: 10px;
 }
 
-.landing-footer a:hover {
-  color: #fb7185 !important;
+.landing-footer .footer-status-text {
+  color: var(--cp-footer-title) !important;
 }
+
+.landing-footer .footer-divider {
+  border-color: var(--cp-footer-border) !important;
+  opacity: 1 !important;
+}
+
+.landing-footer .footer-bottom-text {
+  color: var(--cp-footer-muted) !important;
+  font-weight: 500;
+}
+
 
 /* 11. Theme Toggle Button */
 .theme-toggle-btn {
