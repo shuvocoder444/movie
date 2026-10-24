@@ -1,0 +1,113 @@
+{% extends layout_path %}
+{% load static %}
+
+{% block title %}{{ creator.display_name }} | Filmmaker Profile{% endblock title %}
+
+{% block page_css %}
+<style>
+  .movie-card {
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .movie-card:hover {
+    transform: translateY(-6px);
+  }
+  .movie-poster-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    overflow: hidden;
+    background: #0f172a;
+  }
+  .movie-poster-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+{% endblock page_css %}
+
+{% block content %}
+<div class="container-xxl py-4">
+
+  <!-- Profile Banner Card -->
+  <div class="card p-4 p-md-5 mb-5 shadow">
+    <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+      <img src="{{ creator.avatar_url }}" alt="{{ creator.display_name }}" class="rounded-circle shadow-lg" style="width: 110px; height: 110px; object-fit: cover; background: rgba(115, 103, 240, 0.1);" />
+      <div class="text-center text-md-start">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+          <h2 class="fw-bold mb-0">{{ creator.display_name }}</h2>
+          <span class="badge bg-primary px-3 py-1">Verified Artist</span>
+        </div>
+        <p class="text-muted small mb-2">
+          <i class="ti ti-map-pin me-1 text-primary"></i>{{ creator.city|default:creator.country|default:"Worldwide" }}
+          &bull; Joined {{ creator.created_at|date:"F Y"|default:"Active Contributor" }}
+        </p>
+        <p class="small mb-0" style="max-width: 700px; line-height: 1.6; opacity: 0.9;">
+          {{ creator.clean_headline|default:creator.clean_description|default:"Filmmaker and creator sharing audio-visual pieces with the community." }}
+        </p>
+      </div>
+      <div class="ms-md-auto text-center">
+        <div class="p-3 rounded" style="background: var(--cp-bg-card-hover); border: 1px solid var(--cp-border);">
+          <h3 class="fw-bold text-primary mb-0">{{ movies_count }}</h3>
+          <small class="text-muted">Total Releases</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filmography / Uploaded Movies -->
+  <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+    <i class="ti ti-movie text-primary"></i> Filmography &amp; Releases ({{ movies_count }})
+  </h4>
+
+  <div class="row g-4">
+    {% for movie in movies %}
+    <div class="col-xl-3 col-lg-4 col-md-6">
+      <div class="movie-card card h-100 d-flex flex-column">
+        <a href="{{ movie.get_absolute_url }}" class="movie-poster-wrap text-decoration-none">
+          <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500'" loading="lazy" />
+          <span class="badge bg-black bg-opacity-75 text-white position-absolute bottom-0 end-0 m-2 px-2 py-1 small">
+            {{ movie.formatted_duration }}
+          </span>
+          {% if movie.rating > 0 %}
+          <span class="badge bg-warning text-dark fw-bold position-absolute top-0 start-0 m-2 px-2 py-1 shadow-sm">
+            <i class="ti ti-star-filled me-1"></i>{{ movie.rating|floatformat:1 }}
+          </span>
+          {% endif %}
+        </a>
+
+        <div class="p-3 d-flex flex-column flex-grow-1">
+          <div class="d-flex align-items-center justify-content-between text-muted small mb-2">
+            <span class="text-primary fw-medium">{{ movie.category_name|default:"Cinema" }}</span>
+            <span><i class="ti ti-eye me-1"></i>{{ movie.formatted_views }}</span>
+          </div>
+
+          <h6 class="fw-semibold mb-2 text-truncate" title="{{ movie.title }}">
+            <a href="{{ movie.get_absolute_url }}" class="text-decoration-none">
+              {{ movie.title }}
+            </a>
+          </h6>
+
+          <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between small text-muted" style="border-color: var(--cp-border) !important;">
+            <span>{{ movie.created_at|date:"M Y"|default:"HD Film" }}</span>
+            <a href="{{ movie.get_absolute_url }}" class="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-semibold">
+              Watch <i class="ti ti-chevron-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+      No releases available for this creator currently.
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock content %}

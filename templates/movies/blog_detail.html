@@ -1,0 +1,74 @@
+{% extends layout_path %}
+{% load static %}
+
+{% block title %}{{ post.title }} | CinePulse Editorials{% endblock title %}
+
+{% block content %}
+<div class="container-xxl py-4">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'movie_landing' %}" class="text-primary text-decoration-none">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'blog_list' %}" class="text-primary text-decoration-none">News &amp; Reviews</a></li>
+      <li class="breadcrumb-item active text-white" aria-current="page">{{ post.title|truncatechars:40 }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card bg-dark border-secondary p-4 p-md-5 shadow">
+        <div class="d-flex align-items-center gap-2 text-muted small mb-3">
+          <span class="badge bg-success-subtle text-success">Verified Article</span>
+          <span>&bull;</span>
+          <span>{{ post.created_at|date:"F d, Y"|default:"Recent" }}</span>
+          <span>&bull;</span>
+          <span><i class="ti ti-eye me-1"></i>{{ post.views }} views</span>
+        </div>
+
+        <h1 class="display-6 fw-bold text-white mb-4">{{ post.title }}</h1>
+
+        <div class="d-flex align-items-center gap-3 py-3 border-top border-bottom border-secondary border-opacity-25 mb-4">
+          <span class="badge bg-primary p-2 rounded-circle"><i class="ti ti-user fs-4 text-white"></i></span>
+          <div>
+            <h6 class="text-white mb-0 fw-semibold">{{ post.author.display_name|default:"Editorial Staff" }}</h6>
+            <small class="text-muted">Film Columnist</small>
+          </div>
+        </div>
+
+        <!-- Article Body -->
+        <div class="text-white-50 fs-6 article-content" style="line-height: 1.8;">
+          {{ post.content|linebreaks }}
+        </div>
+
+        {% if post.tags %}
+        <div class="mt-5 pt-3 border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2 align-items-center">
+          <span class="text-muted small"><i class="ti ti-tags me-1"></i>Tags:</span>
+          {% for t in post.tags.split %}
+          <span class="badge bg-dark border border-secondary text-muted">{{ t|cut:"," }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Related Articles Sidebar -->
+    <div class="col-lg-4">
+      <div class="card bg-dark border-secondary p-4 shadow">
+        <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+          <i class="ti ti-news text-primary"></i> Recent Articles
+        </h5>
+        <div class="d-flex flex-column gap-3">
+          {% for r in recent_posts %}
+          <a href="{{ r.get_absolute_url }}" class="text-decoration-none border-bottom border-secondary border-opacity-25 pb-3">
+            <h6 class="text-white fw-semibold small mb-1 hover-primary text-truncate">{{ r.title }}</h6>
+            <span class="text-muted small" style="font-size: 11px;">{{ r.created_at|date:"M d, Y" }} &bull; {{ r.views }} views</span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock content %}

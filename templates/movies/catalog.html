@@ -1,0 +1,208 @@
+{% extends layout_path %}
+{% load static %}
+
+{% block title %}Explore Movies &amp; Videos | CinePulse Catalog{% endblock title %}
+
+{% block page_css %}
+<style>
+  .movie-card {
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .movie-card:hover {
+    transform: translateY(-6px);
+  }
+  .movie-poster-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    overflow: hidden;
+    background: #0f172a;
+  }
+  .movie-poster-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  .movie-card:hover .movie-poster-img {
+    transform: scale(1.05);
+  }
+  .filter-card {
+    border-radius: 14px;
+  }
+</style>
+{% endblock page_css %}
+
+{% block content %}
+<div class="container-xxl py-4">
+
+  <!-- Header Title & Stats -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 d-flex align-items-center gap-2">
+        <i class="ti ti-device-tv text-primary"></i> 
+        {% if active_category %}
+          Genre: {{ active_category.name }}
+        {% elif query %}
+          Search Results for "{{ query }}"
+        {% else %}
+          All Movies &amp; Videos
+        {% endif %}
+      </h2>
+      <p class="text-muted small mb-0">Browsing <strong>{{ total_count }}</strong> titles in the library</p>
+    </div>
+
+    <!-- Sorting Controls -->
+    <div class="d-flex align-items-center gap-2">
+      <label class="text-muted small me-1">Sort by:</label>
+      <div class="btn-group" role="group">
+        <a href="?{% if active_category %}category={{ active_category.slug }}&{% endif %}{% if query %}q={{ query }}&{% endif %}sort=views" class="btn btn-sm {% if sort_by == 'views' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+          <i class="ti ti-flame me-1"></i> Popular
+        </a>
+        <a href="?{% if active_category %}category={{ active_category.slug }}&{% endif %}{% if query %}q={{ query }}&{% endif %}sort=rating" class="btn btn-sm {% if sort_by == 'rating' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+          <i class="ti ti-star me-1"></i> Top Rated
+        </a>
+        <a href="?{% if active_category %}category={{ active_category.slug }}&{% endif %}{% if query %}q={{ query }}&{% endif %}sort=newest" class="btn btn-sm {% if sort_by == 'newest' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+          <i class="ti ti-clock me-1"></i> Newest
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- LEFT SIDEBAR: Filters -->
+    <div class="col-lg-3">
+      <div class="filter-card card p-3 p-md-4 shadow mb-4 sticky-top" style="top: 85px; z-index: 10;">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+          <i class="ti ti-filter text-primary"></i> Filter Catalog
+        </h5>
+
+        <!-- Search Input -->
+        <form method="GET" class="mb-4">
+          {% if active_category %}<input type="hidden" name="category" value="{{ active_category.slug }}">{% endif %}
+          {% if sort_by %}<input type="hidden" name="sort" value="{{ sort_by }}">{% endif %}
+          <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Keyword..." value="{{ query }}">
+            <button class="btn btn-primary" type="submit"><i class="ti ti-search"></i></button>
+          </div>
+        </form>
+
+        <!-- Category Filter List -->
+        <h6 class="text-muted text-uppercase small fw-bold mb-2">Categories</h6>
+        <div class="d-flex flex-column gap-1 mb-4" style="max-height: 340px; overflow-y: auto;">
+          <a href="{% url 'movie_catalog' %}{% if sort_by %}?sort={{ sort_by }}{% endif %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none {% if not active_category %}bg-primary text-white{% else %}text-muted hover-bg-dark{% endif %} small">
+            <span>All Genres</span>
+            <span class="badge bg-secondary rounded-pill">{{ total_count }}</span>
+          </a>
+          {% for cat in categories %}
+          <a href="?category={{ cat.slug }}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="d-flex align-items-center justify-content-between p-2 rounded text-decoration-none {% if active_category and active_category.slug == cat.slug %}bg-primary text-white{% else %}text-muted hover-bg-dark{% endif %} small">
+            <span>{{ cat.name }}</span>
+            <span class="badge bg-secondary rounded-pill">{{ cat.movie_cnt }}</span>
+          </a>
+          {% endfor %}
+        </div>
+
+        {% if active_category or query %}
+        <a href="{% url 'movie_catalog' %}" class="btn btn-outline-danger btn-sm w-100">
+          <i class="ti ti-x me-1"></i> Reset Filters
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RIGHT MAIN: Movies Grid -->
+    <div class="col-lg-9">
+      {% if movies %}
+      <div class="row g-4">
+        {% for movie in movies %}
+        <div class="col-xl-4 col-md-6">
+          <div class="movie-card card h-100 d-flex flex-column">
+            <a href="{{ movie.get_absolute_url }}" class="movie-poster-wrap text-decoration-none">
+              <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500'" loading="lazy" />
+              <span class="badge bg-black bg-opacity-75 text-white position-absolute bottom-0 end-0 m-2 px-2 py-1 small">
+                {{ movie.formatted_duration }}
+              </span>
+              {% if movie.rating > 0 %}
+              <span class="badge bg-warning text-dark fw-bold position-absolute top-0 start-0 m-2 px-2 py-1 shadow-sm">
+                <i class="ti ti-star-filled me-1"></i>{{ movie.rating|floatformat:1 }}
+              </span>
+              {% endif %}
+            </a>
+
+            <div class="p-3 d-flex flex-column flex-grow-1">
+              <div class="d-flex align-items-center justify-content-between text-muted small mb-2">
+                <span class="text-primary fw-medium">{{ movie.category_name|default:"Cinema" }}</span>
+                <span><i class="ti ti-eye me-1"></i>{{ movie.formatted_views }}</span>
+              </div>
+
+              <h6 class="fw-semibold mb-2 text-truncate" title="{{ movie.title }}">
+                <a href="{{ movie.get_absolute_url }}" class="text-decoration-none">
+                  {{ movie.title }}
+                </a>
+              </h6>
+
+              <div class="mt-auto pt-2 border-top d-flex align-items-center justify-content-between small text-muted" style="border-color: var(--cp-border) !important;">
+                <span>{{ movie.created_at|date:"M Y"|default:"HD Film" }}</span>
+                <a href="{{ movie.get_absolute_url }}" class="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-semibold">
+                  Watch <i class="ti ti-chevron-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- PAGINATION -->
+      {% if page_obj.has_other_pages %}
+      <nav aria-label="Catalog pagination" class="mt-5">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1{% if active_category %}&category={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">First</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if active_category %}&category={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+              <i class="ti ti-chevron-left"></i>
+            </a>
+          </li>
+          {% endif %}
+
+          <li class="page-item active">
+            <span class="page-link bg-primary border-primary">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+          </li>
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if active_category %}&category={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+              <i class="ti ti-chevron-right"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if active_category %}&category={{ active_category.slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Last</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
+
+      {% else %}
+      <div class="text-center py-5 card p-4">
+        <i class="ti ti-movie-off fs-1 text-muted mb-3"></i>
+        <h4>No Movies Found</h4>
+        <p class="text-muted small">Try modifying your search or resetting the active filters.</p>
+        <a href="{% url 'movie_catalog' %}" class="btn btn-primary btn-sm mx-auto">Clear All Filters</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock content %}

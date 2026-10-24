@@ -1,0 +1,240 @@
+{% extends layout_path %}
+{% load static %}
+
+{% block title %}{{ movie.title }} | Watch on CinePulse{% endblock title %}
+
+{% block page_css %}
+<style>
+  .player-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+  }
+  .player-wrapper iframe,
+  .player-wrapper video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .comment-item {
+    border-radius: 12px;
+    padding: 16px;
+    background: var(--cp-bg-card-hover) !important;
+  }
+</style>
+{% endblock page_css %}
+
+{% block content %}
+<div class="container-xxl py-4">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'movie_landing' %}" class="text-primary text-decoration-none">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'movie_catalog' %}" class="text-primary text-decoration-none">Movies</a></li>
+      {% if movie.category_name %}
+      <li class="breadcrumb-item"><a href="{% url 'movie_catalog' %}?category={{ movie.category_name|urlencode }}" class="text-primary text-decoration-none">{{ movie.category_name }}</a></li>
+      {% endif %}
+      <li class="breadcrumb-item active" aria-current="page">{{ movie.title|truncatechars:35 }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <!-- LEFT MAIN COLUMN: Video Player & Details -->
+    <div class="col-lg-8">
+
+      <!-- VIDEO PLAYER -->
+      <div class="player-wrapper mb-4">
+        {% if movie.clean_youtube_id %}
+          <iframe 
+            src="{{ movie.get_embed_url }}" 
+            title="{{ movie.title }}" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        {% elif movie.b2_video_mp4_url %}
+          <video 
+            id="movieVideoPlayer" 
+            controls 
+            autoplay 
+            playsinline 
+            poster="{{ movie.get_thumbnail_url }}" 
+            class="w-100 h-100">
+            <source src="{{ movie.b2_video_mp4_url }}" type="video/mp4" />
+            {% if movie.b2_video_webm_url %}
+            <source src="{{ movie.b2_video_webm_url }}" type="video/webm" />
+            {% endif %}
+            Your browser does not support the video player.
+          </video>
+        {% else %}
+          <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
+            <i class="ti ti-video-off fs-1 text-muted mb-2"></i>
+            <h5>Video Stream Unavailable</h5>
+            <p class="text-muted small">This title's media stream is being processed on Backblaze B2 cloud storage.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- TITLE & ACTION STRIP -->
+      <div class="card p-4 mb-4 shadow">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+          <div>
+            {% if movie.clean_youtube_id %}
+            <span class="badge bg-danger px-3 py-1 mb-2"><i class="ti ti-brand-youtube me-1"></i> YouTube HD</span>
+            {% else %}
+            <span class="badge bg-info px-3 py-1 mb-2"><i class="ti ti-cloud-lock me-1"></i> Backblaze B2 Stream</span>
+            {% endif %}
+            <span class="badge bg-primary px-3 py-1 mb-2">{{ movie.category_name|default:"Cinema" }}</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3 text-muted small">
+            <span><i class="ti ti-eye me-1 text-primary"></i><strong>{{ movie.views }}</strong> views</span>
+            <span>&bull;</span>
+            <span class="text-warning"><i class="ti ti-star-filled me-1"></i><strong>{{ movie.rating|floatformat:1 }}</strong> ({{ movie.rating_count }})</span>
+            <span>&bull;</span>
+            <span><i class="ti ti-clock me-1"></i>{{ movie.formatted_duration }}</span>
+          </div>
+        </div>
+
+        <h2 class="fw-bold mb-3">{{ movie.title }}</h2>
+
+        <div class="p-3 rounded mb-4" style="background: var(--cp-bg-card-hover); border: 1px solid var(--cp-border);">
+          <h6 class="text-muted text-uppercase small fw-bold mb-2">Synopsis / Overview</h6>
+          <p class="mb-0" style="line-height: 1.7; color: var(--cp-text-secondary);">
+            {{ movie.clean_description|default:"An independent production piece streamed directly via CinePulse network." }}
+          </p>
+        </div>
+
+        {% if movie.tags %}
+        <div class="d-flex flex-wrap gap-1 align-items-center mb-2">
+          <span class="text-muted small me-2"><i class="ti ti-tags me-1"></i>Tags:</span>
+          {% for tag in movie.tags.split %}
+          <span class="badge bg-secondary small">{{ tag|cut:"," }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- USER COMMENTS & REVIEWS -->
+      <div class="card p-4 shadow">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <h4 class="fw-bold mb-0 d-flex align-items-center gap-2">
+            <i class="ti ti-messages text-primary"></i> Viewer Reviews &amp; Discussion
+          </h4>
+          <span class="badge bg-primary rounded-pill">{{ comments_count }} Reviews</span>
+        </div>
+
+        <!-- Add Comment Form -->
+        <form method="POST" class="mb-4 p-3 rounded" style="background: var(--cp-bg-card-hover); border: 1px solid var(--cp-border);">
+          {% csrf_token %}
+          <h6 class="fw-semibold mb-2">Leave a Review</h6>
+          <div class="mb-3">
+            <input type="text" name="author_name" class="form-control" placeholder="Your Name" required />
+          </div>
+          <div class="mb-3">
+            <textarea name="comment" rows="3" class="form-control" placeholder="Share your thoughts about this movie..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm px-4">
+            <i class="ti ti-send me-1"></i> Post Comment
+          </button>
+        </form>
+
+        <!-- Comments List -->
+        <div class="d-flex flex-column gap-3">
+          {% for cmt in comments %}
+          {% if cmt.clean_text %}
+          <div class="comment-item p-3">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary p-2 rounded-circle">
+                  <i class="ti ti-user text-white"></i>
+                </span>
+                <span class="fw-semibold" style="color: var(--cp-text-primary);">{{ cmt.author_name|default:"Audience Member" }}</span>
+              </div>
+              <small class="text-muted">{{ cmt.created_at|date:"M d, Y"|default:"Verified Viewer" }}</small>
+            </div>
+            <p class="small mb-0 ps-4 ms-2" style="color: var(--cp-text-secondary); line-height: 1.6;">
+              {{ cmt.clean_text }}
+            </p>
+          </div>
+          {% endif %}
+          {% empty %}
+          <div class="text-center py-4 text-muted small">
+            No comments yet. Be the first to share your review!
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: Director Info & Related Movies -->
+    <div class="col-lg-4">
+
+      <!-- DIRECTOR / CREATOR CARD -->
+      {% if movie.owner %}
+      <div class="card p-4 mb-4 shadow">
+        <h6 class="text-muted text-uppercase small fw-bold mb-3">Published By</h6>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <img src="{{ movie.owner.avatar_url }}" alt="{{ movie.owner.display_name }}" class="rounded-circle shadow" style="width: 60px; height: 60px; object-fit: cover; background: rgba(115, 103, 240, 0.1);" />
+          <div>
+            <h5 class="fw-bold mb-1">
+              <a href="{% url 'creator_detail' movie.owner.id %}" class="text-decoration-none">
+                {{ movie.owner.display_name }}
+              </a>
+            </h5>
+            <small class="text-muted d-block"><i class="ti ti-map-pin me-1"></i>{{ movie.owner.city|default:movie.owner.country|default:"Filmmaker" }}</small>
+          </div>
+        </div>
+        <p class="text-muted small mb-3">
+          {{ movie.owner.clean_headline|default:movie.owner.clean_description|truncatewords:20|default:"Independent media creator and contributor." }}
+        </p>
+        <a href="{% url 'creator_detail' movie.owner.id %}" class="btn btn-outline-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1">
+          View Creator Filmography <i class="ti ti-arrow-right"></i>
+        </a>
+      </div>
+      {% endif %}
+
+      <!-- RELATED MOVIES -->
+      <div class="card p-4 shadow">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+          <i class="ti ti-sparkles text-warning"></i> Recommended For You
+        </h5>
+
+        <div class="d-flex flex-column gap-3">
+          {% for rel in related_movies %}
+          <a href="{{ rel.get_absolute_url }}" class="d-flex gap-3 text-decoration-none p-2 rounded hover-bg-dark border border-transparent">
+            <div class="position-relative flex-shrink-0" style="width: 110px; height: 65px; border-radius: 8px; overflow: hidden; background: #000;">
+              <img src="{{ rel.get_thumbnail_url }}" alt="{{ rel.title }}" class="w-100 h-100 object-fit-cover" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=200'" />
+              <span class="badge bg-black bg-opacity-75 text-white position-absolute bottom-0 end-0 m-1 px-1 small" style="font-size: 10px;">
+                {{ rel.formatted_duration }}
+              </span>
+            </div>
+            <div class="overflow-hidden">
+              <h6 class="small fw-semibold text-truncate mb-1" title="{{ rel.title }}" style="color: var(--cp-text-primary);">
+                {{ rel.title }}
+              </h6>
+              <div class="d-flex align-items-center gap-2 text-muted small" style="font-size: 11px;">
+                <span><i class="ti ti-eye me-1"></i>{{ rel.formatted_views }}</span>
+                <span>&bull;</span>
+                <span class="text-primary">{{ rel.category_name }}</span>
+              </div>
+            </div>
+          </a>
+          {% empty %}
+          <div class="text-muted small">No other titles in this category yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock content %}

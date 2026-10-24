@@ -1,0 +1,287 @@
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import View, TemplateView, DetailView, ListView
+from django.core.paginator import Paginator
+from django.db.models import Q, Count
+from django.http import JsonResponse
+from web_project import TemplateLayout
+from web_project.template_helpers.theme import TemplateHelper
+from .models import Movie, Category, Profile, MovieComment, BlogPost
+
+
+class BaseMovieView:
+    """Helper mixin to initialize Vuexy template layout."""
+    def get_layout_context(self, request, context=None):
+        if context is None:
+            context = {}
+        context = TemplateLayout.init(self, context)
+        context.update({
+            "layout_path": TemplateHelper.set_layout("layout_front.html", context),
+            "is_front": True,
+            "is_navbar": True,
+            "is_footer": True,
+            "content_layout": "wide",
+            "style": "dark",  # Cinematic dark theme for movie experience!
+        })
+        return context
+
+
+class MovieLandingView(BaseMovieView, View):
+    """Movie Portal Landing Page."""
+    def get(self, request):
+        context = self.get_layout_context(request)
+
+        # 1. Hero Featured Movies (with valid video/youtube)
+        hero_movies = (
+            Movie.objects.filter(youtube_id__gt="", views__gt=100)
+            .order_by("-views")[:6]
+        )
+        if not hero_movies.exists():
+            hero_movies = Movie.objects.all()[:6]
+
+        # 2. Trending Movies (Highest Views)
+        trending_movies = Movie.objects.all().order_by("-views")[:12]
+
+        # 3. Top Rated Movies
+        top_rated_movies = Movie.objects.filter(rating__gte=4.0).order_by("-rating", "-views")[:12]
+
+        # 4. Latest Added Movies
+        latest_movies = Movie.objects.filter(created_at__isnull=False).order_by("-created_at")[:12]
+
+        # 5. Categories with counts
+        top_categories = (
+            Category.objects.annotate(movie_cnt=Count("movies"))
+            .filter(movie_cnt__gt=0)
+            .order_by("-movie_cnt")[:12]
+        )
+
+        # 6. Featured Creators/Directors
+        featured_creators = (
+            Profile.objects.annotate(num_movies=Count("movies"))
+            .filter(num_movies__gt=0)
+            .order_by("-num_movies")[:8]
+        )
+
+        # 7. Recent Movie Reviews / Blog Posts
+        blog_posts = BlogPost.objects.all().order_by("-created_at")[:4]
+
+        # 8. Stats
+        total_movies = Movie.objects.count()
+        total_creators = Profile.objects.count()
+        total_categories = Category.objects.count()
+
+        context.update({
+            "hero_movies": hero_movies,
+            "hero_featured": hero_movies.first() if hero_movies else None,
+            "trending_movies": trending_movies,
+            "top_rated_movies": top_rated_movies,
+            "latest_movies": latest_movies,
+            "top_categories": top_categories,
+            "featured_creators": featured_creators,
+            "blog_posts": blog_posts,
+            "total_movies": total_movies,
+            "total_creators": total_creators,
+            "total_categories": total_categories,
+        })
+        return render(request, "movies/landing.html", context)
+
+
+class MovieCatalogView(BaseMovieView, View):
+    """Movie Explore and Catalog Page with Filters, Search and Sorting."""
+    def get(self, request):
+        context = self.get_layout_context(request)
+
+        query = request.GET.get("q", "").strip()
+        cat_slug = request.GET.get("category", "").strip()
+        sort_by = request.GET.get("sort", "views")
+        min_rating = request.GET.get("rating", "")
+
+        movies = Movie.objects.all()
+
+        if query:
+            movies = movies.filter(
+                Q(title__icontains=query)
+                | Q(description__icontains=query)
+                | Q(tags__icontains=query)
+                | Q(category_name__icontains=query)
+            )
+
+        active_category = None
+        if cat_slug:
+            active_category = Category.objects.filter(slug=cat_slug).first()
+            if active_category:
+                movies = movies.filter(Q(category=active_category) | Q(category_name__iexact=active_category.name))
+
+        if min_rating and min_rating.isdigit():
+            movies = movies.filter(rating__gte=float(min_rating))
+
+        # Sorting
+        if sort_by == "rating":
+            movies = movies.order_by("-rating", "-views")
+        elif sort_by == "newest":
+            movies = movies.order_by("-created_at", "-id")
+        elif sort_by == "title":
+            movies = movies.order_by("title")
+        else:  # default 'views'
+            movies = movies.order_by("-views", "-rating")
+
+        # Pagination
+        paginator = Paginator(movies, 18)
+        page_number = request.GET.get("page", 1)
+        page_obj = paginator.get_page(page_number)
+
+        categories = (
+            Category.objects.annotate(movie_cnt=Count("movies"))
+            .filter(movie_cnt__gt=0)
+            .order_by("-movie_cnt")
+        )
+
+        context.update({
+            "page_obj": page_obj,
+            "movies": page_obj.object_list,
+            "categories": categories,
+            "active_category": active_category,
+            "query": query,
+            "sort_by": sort_by,
+            "min_rating": min_rating,
+            "total_count": paginator.count,
+        })
+        return render(request, "movies/catalog.html", context)
+
+
+class MovieDetailView(BaseMovieView, View):
+    """Movie Player & Details View with Comments and Recommendations."""
+    def get(self, request, pk, slug=None):
+        context = self.get_layout_context(request)
+        movie = get_object_or_404(Movie, pk=pk)
+
+        # Increment view count
+        Movie.objects.filter(pk=pk).update(views=movie.views + 1)
+        movie.views += 1
+
+        # Related movies
+        related_movies = (
+            Movie.objects.filter(
+                Q(category_name=movie.category_name) | Q(tags__icontains=movie.category_name)
+            )
+            .exclude(pk=pk)
+            .order_by("-views")[:6]
+        )
+
+        # Comments: filter out empty tags / spam
+        raw_comments = movie.comments.all().select_related("author").order_by("-created_at")[:60]
+        comments = [c for c in raw_comments if c.clean_text][:30]
+
+        context.update({
+            "movie": movie,
+            "related_movies": related_movies,
+            "comments": comments,
+            "comments_count": len(comments),
+        })
+        return render(request, "movies/detail.html", context)
+
+    def post(self, request, pk, slug=None):
+        movie = get_object_or_404(Movie, pk=pk)
+        text = request.POST.get("comment", "").strip()
+        author_name = request.POST.get("author_name", "Anonymous Movie Buff").strip()
+
+        if text:
+            MovieComment.objects.create(
+                movie=movie,
+                author_name=author_name or "Guest",
+                text=text,
+                rating=5,
+            )
+            Movie.objects.filter(pk=pk).update(comments_count=movie.comments_count + 1)
+
+        return redirect("movie_detail", pk=movie.id, slug=movie.slug or f"movie-{movie.id}")
+
+
+class CreatorListView(BaseMovieView, View):
+    """List of Movie Creators & Directors."""
+    def get(self, request):
+        context = self.get_layout_context(request)
+        creators = (
+            Profile.objects.annotate(num_movies=Count("movies"))
+            .filter(num_movies__gt=0)
+            .order_by("-num_movies")
+        )
+        paginator = Paginator(creators, 24)
+        page_number = request.GET.get("page", 1)
+        page_obj = paginator.get_page(page_number)
+
+        context.update({
+            "page_obj": page_obj,
+            "creators": page_obj.object_list,
+        })
+        return render(request, "movies/creator_list.html", context)
+
+
+class CreatorDetailView(BaseMovieView, View):
+    """Creator Profile & Filmography."""
+    def get(self, request, pk):
+        context = self.get_layout_context(request)
+        creator = get_object_or_404(Profile, pk=pk)
+        movies = creator.movies.all().order_by("-views")
+
+        context.update({
+            "creator": creator,
+            "movies": movies,
+            "movies_count": movies.count(),
+        })
+        return render(request, "movies/creator_detail.html", context)
+
+
+class BlogPostListView(BaseMovieView, View):
+    """Movie News, Blogs & Reviews."""
+    def get(self, request):
+        context = self.get_layout_context(request)
+        blogs = BlogPost.objects.all().order_by("-created_at")
+        paginator = Paginator(blogs, 12)
+        page_number = request.GET.get("page", 1)
+        page_obj = paginator.get_page(page_number)
+
+        context.update({
+            "page_obj": page_obj,
+            "blogs": page_obj.object_list,
+        })
+        return render(request, "movies/blog_list.html", context)
+
+
+class BlogPostDetailView(BaseMovieView, View):
+    """Blog / Review Article Detail."""
+    def get(self, request, pk, slug=None):
+        context = self.get_layout_context(request)
+        post = get_object_or_404(BlogPost, pk=pk)
+        BlogPost.objects.filter(pk=pk).update(views=post.views + 1)
+        post.views += 1
+        recent_posts = BlogPost.objects.exclude(pk=pk).order_by("-created_at")[:5]
+
+        context.update({
+            "post": post,
+            "recent_posts": recent_posts,
+        })
+        return render(request, "movies/blog_detail.html", context)
+
+
+def quick_search_api(request):
+    """JSON search suggestions for the navbar search input."""
+    q = request.GET.get("q", "").strip()
+    if len(q) < 2:
+        return JsonResponse({"results": []})
+
+    results = []
+    movies = Movie.objects.filter(
+        Q(title__icontains=q) | Q(category_name__icontains=q)
+    )[:8]
+
+    for m in movies:
+        results.append({
+            "id": m.id,
+            "title": m.title,
+            "category": m.category_name,
+            "thumbnail": m.get_thumbnail_url,
+            "duration": m.formatted_duration,
+            "url": m.get_absolute_url(),
+        })
+
+    return JsonResponse({"results": results})

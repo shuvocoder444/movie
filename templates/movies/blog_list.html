@@ -1,0 +1,65 @@
+{% extends layout_path %}
+{% load static %}
+
+{% block title %}Film News &amp; Editorials | CinePulse Blog{% endblock title %}
+
+{% block content %}
+<div class="container-xxl py-4">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="fw-bold text-white mb-1 d-flex align-items-center gap-2">
+        <i class="ti ti-news text-success"></i> Cinema News &amp; Editorial Reviews
+      </h2>
+      <p class="text-muted small mb-0">Discover stories, film criticism, and inside coverage of independent works</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    {% for post in blogs %}
+    <div class="col-lg-6">
+      <div class="card bg-dark border-secondary p-4 h-100 shadow-sm d-flex flex-column">
+        <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+          <span class="badge bg-success-subtle text-success">Editorial</span>
+          <span>&bull;</span>
+          <span>{{ post.created_at|date:"F d, Y"|default:"Recent Article" }}</span>
+          <span>&bull;</span>
+          <span><i class="ti ti-eye me-1"></i>{{ post.views }} views</span>
+        </div>
+
+        <h4 class="fw-bold text-white mb-3">
+          <a href="{{ post.get_absolute_url }}" class="text-white text-decoration-none hover-primary">
+            {{ post.title }}
+          </a>
+        </h4>
+
+        <p class="text-muted small mb-4 flex-grow-1" style="line-height: 1.6;">
+          {{ post.content|striptags|truncatewords:45 }}
+        </p>
+
+        <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-25">
+          <span class="small text-muted"><i class="ti ti-user me-1"></i>{{ post.author.display_name|default:"Editor" }}</span>
+          <a href="{{ post.get_absolute_url }}" class="btn btn-sm btn-outline-success">
+            Read Full Article <i class="ti ti-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+  <nav class="mt-5">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link bg-dark border-secondary text-white" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+      {% endif %}
+      <li class="page-item active"><span class="page-link bg-primary border-primary">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link bg-dark border-secondary text-white" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% endblock content %}

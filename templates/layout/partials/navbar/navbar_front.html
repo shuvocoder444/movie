@@ -1,0 +1,178 @@
+{% load static %}
+
+<!-- Full-Width Header Wrapper -->
+<header class="cinema-navbar-wrapper">
+  <div class="cinema-navbar-inner">
+    <nav class="navbar navbar-expand-lg px-0 py-2">
+      <!-- Menu logo wrapper: Start -->
+      <a href="{% url 'movie_landing' %}" class="navbar-brand d-flex align-items-center py-0 me-4">
+        <span class="cinema-brand-logo-wrap">
+          <img src="{% static 'img/branding/indimusic-logo.png' %}" alt="IndiMusic TV" class="cinema-brand-logo" />
+        </span>
+      </a>
+      <!-- Menu logo wrapper: End -->
+
+      <!-- Mobile Menu Toggle -->
+      <button class="navbar-toggler border-0 px-0 me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="ti ti-menu-2 fs-2"></i>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- Navigation Links: Start -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link px-3" aria-current="page" href="{% url 'movie_landing' %}">
+              <i class="ti ti-home me-1"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-3" href="{% url 'movie_catalog' %}">
+              <i class="ti ti-device-tv me-1"></i> Movies &amp; Videos
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle px-3" href="#" id="genresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="ti ti-category me-1"></i> Genres
+            </a>
+            <ul class="dropdown-menu shadow-lg border-0" aria-labelledby="genresDropdown">
+              <li><a class="dropdown-item py-2" href="{% url 'movie_catalog' %}?category=Rock"><i class="ti ti-guitar-pick text-warning me-2"></i> Rock</a></li>
+              <li><a class="dropdown-item py-2" href="{% url 'movie_catalog' %}?category=Pop"><i class="ti ti-disc text-info me-2"></i> Pop</a></li>
+              <li><a class="dropdown-item py-2" href="{% url 'movie_catalog' %}?category=Country"><i class="ti ti-leaf text-success me-2"></i> Country</a></li>
+              <li><a class="dropdown-item py-2" href="{% url 'movie_catalog' %}?category=Indie"><i class="ti ti-sparkles text-danger me-2"></i> Indie</a></li>
+              <li><a class="dropdown-item py-2" href="{% url 'movie_catalog' %}?category=Hip+Hop"><i class="ti ti-headphones text-primary me-2"></i> Hip Hop</a></li>
+              <li><hr class="dropdown-divider my-1"></li>
+              <li><a class="dropdown-item py-2 text-primary fw-semibold" href="{% url 'movie_catalog' %}"><i class="ti ti-grid-dots me-2"></i> All Categories &raquo;</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-3" href="{% url 'creator_list' %}">
+              <i class="ti ti-users me-1"></i> Directors &amp; Artists
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link px-3" href="{% url 'blog_list' %}">
+              <i class="ti ti-news me-1"></i> News &amp; Reviews
+            </a>
+          </li>
+        </ul>
+        <!-- Navigation Links: End -->
+
+        <!-- Search Bar with Live Suggestions: Start -->
+        <div class="position-relative me-3 my-2 my-lg-0" style="min-width: 270px;">
+          <form method="GET" action="{% url 'movie_catalog' %}" class="d-flex align-items-center">
+            <div class="input-group">
+              <span class="input-group-text"><i class="ti ti-search"></i></span>
+              <input type="text" id="navbarSearchInput" name="q" class="form-control" placeholder="Search 2,780+ movies..." autocomplete="off" />
+            </div>
+          </form>
+          <div id="liveSearchResults" class="dropdown-menu shadow-xl w-100 p-2 mt-1 position-absolute d-none" style="max-height: 380px; overflow-y: auto; z-index: 1090;">
+          </div>
+        </div>
+        <!-- Search Bar: End -->
+
+        <!-- Right Side Controls: Theme Switcher & Actions -->
+        <div class="d-flex align-items-center gap-2">
+          <!-- Dark / Light Mode Switcher Button -->
+          <button type="button" id="themeToggleBtn" class="theme-toggle-btn shadow-sm" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+            <i class="ti ti-moon" id="themeToggleIcon"></i>
+          </button>
+
+          <a href="{% url 'movie_catalog' %}?sort=rating" class="btn btn-outline-warning btn-sm d-none d-sm-inline-flex align-items-center">
+            <i class="ti ti-star-filled me-1"></i> Top Rated
+          </a>
+          <a href="{% url 'movie_catalog' %}" class="btn btn-primary btn-sm d-inline-flex align-items-center shadow">
+            <i class="ti ti-player-play-filled me-1"></i> Watch Now
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+// ==================== CinePulse Dual Theme & Live Search Script ====================
+(function() {
+  // Theme Management
+  const currentTheme = localStorage.getItem('cinepulse-theme') || 'dark';
+  applyTheme(currentTheme);
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark-style');
+      document.documentElement.classList.remove('light-style');
+      const icon = document.getElementById('themeToggleIcon');
+      if (icon) {
+        icon.className = 'ti ti-sun text-warning';
+      }
+    } else {
+      document.documentElement.classList.add('light-style');
+      document.documentElement.classList.remove('dark-style');
+      const icon = document.getElementById('themeToggleIcon');
+      if (icon) {
+        icon.className = 'ti ti-moon text-primary';
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('themeToggleBtn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        const activeTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        localStorage.setItem('cinepulse-theme', activeTheme);
+        applyTheme(activeTheme);
+      });
+    }
+
+    // Live Search
+    const searchInput = document.getElementById('navbarSearchInput');
+    const searchResults = document.getElementById('liveSearchResults');
+    let timeout = null;
+
+    if (searchInput && searchResults) {
+      searchInput.addEventListener('input', function() {
+        clearTimeout(timeout);
+        const q = this.value.trim();
+        if (q.length < 2) {
+          searchResults.classList.add('d-none');
+          searchResults.innerHTML = '';
+          return;
+        }
+        timeout = setTimeout(function() {
+          fetch('{% url "quick_search_api" %}?q=' + encodeURIComponent(q))
+            .then(res => res.json())
+            .then(data => {
+              if (data.results && data.results.length > 0) {
+                let html = '<div class="px-2 py-1 text-muted small fw-semibold text-uppercase">Found Titles</div>';
+                data.results.forEach(item => {
+                  html += `
+                    <a href="${item.url}" class="dropdown-item d-flex align-items-center py-2 px-2 rounded text-decoration-none">
+                      <img src="${item.thumbnail}" class="rounded me-2" style="width: 48px; height: 32px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=100'" />
+                      <div class="overflow-hidden">
+                        <div class="text-truncate fw-medium" style="max-width: 200px;">${item.title}</div>
+                        <small class="text-muted d-block">${item.category || 'Movie'} &bull; ${item.duration}</small>
+                      </div>
+                    </a>
+                  `;
+                });
+                searchResults.innerHTML = html;
+                searchResults.classList.remove('d-none');
+              } else {
+                searchResults.innerHTML = '<div class="p-3 text-center text-muted small">No movies found</div>';
+                searchResults.classList.remove('d-none');
+              }
+            })
+            .catch(() => searchResults.classList.add('d-none'));
+        }, 220);
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+          searchResults.classList.add('d-none');
+        }
+      });
+    }
+  });
+})();
+</script>

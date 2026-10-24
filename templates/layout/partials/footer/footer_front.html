@@ -1,0 +1,75 @@
+{% load static %}
+
+<footer class="landing-footer bg-footer-dark position-relative mt-5 pt-5 pb-4" style="background: #090d16; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+  <div class="container-xxl">
+    <div class="row gy-4">
+      <!-- Col 1: Brand & Bio -->
+      <div class="col-lg-4 col-md-6">
+        <a href="{% url 'movie_landing' %}" class="app-brand-link mb-3 d-inline-flex align-items-center">
+          <span class="cinema-brand-logo-wrap p-1" style="background: #000000; border-radius: 8px;">
+            <img src="{% static 'img/branding/indimusic-logo.png' %}" alt="IndiMusic TV" style="height: 48px; object-fit: contain;" />
+          </span>
+        </a>
+        <p class="text-muted small pe-lg-4 mt-2">
+          IndiMusic TV is a premier music video and independent film streaming platform — <em>"We Are Music, Together."</em> Powered by over 2,780+ videos &amp; films and 7,400+ creative artists and filmmakers.
+        </p>
+        <div class="d-flex align-items-center gap-2 text-white-50">
+          <span class="badge bg-dark border border-secondary text-white px-2 py-1"><i class="ti ti-brand-youtube text-danger me-1"></i> HD Streaming</span>
+          <span class="badge bg-dark border border-secondary text-white px-2 py-1"><i class="ti ti-cloud text-info me-1"></i> Backblaze B2</span>
+        </div>
+      </div>
+
+      <!-- Col 2: Quick Links -->
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 class="footer-title mb-3 text-white fw-semibold">Navigation</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><a href="{% url 'movie_landing' %}" class="footer-link text-muted small text-decoration-none hover-white">Home</a></li>
+          <li class="mb-2"><a href="{% url 'movie_catalog' %}" class="footer-link text-muted small text-decoration-none hover-white">All Movies</a></li>
+          <li class="mb-2"><a href="{% url 'movie_catalog' %}?sort=views" class="footer-link text-muted small text-decoration-none hover-white">Trending</a></li>
+          <li class="mb-2"><a href="{% url 'movie_catalog' %}?sort=rating" class="footer-link text-muted small text-decoration-none hover-white">Top Rated</a></li>
+          <li class="mb-2"><a href="{% url 'creator_list' %}" class="footer-link text-muted small text-decoration-none hover-white">Creators</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Popular Genres -->
+      <div class="col-lg-3 col-md-3 col-6">
+        <h6 class="footer-title mb-3 text-white fw-semibold">Top Genres</h6>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'movie_catalog' %}?category=Pop" class="badge bg-dark border border-secondary text-muted text-decoration-none py-2 px-3">Pop</a>
+          <a href="{% url 'movie_catalog' %}?category=Rock" class="badge bg-dark border border-secondary text-muted text-decoration-none py-2 px-3">Rock</a>
+          <a href="{% url 'movie_catalog' %}?category=Country" class="badge bg-dark border border-secondary text-muted text-decoration-none py-2 px-3">Country</a>
+          <a href="{% url 'movie_catalog' %}?category=Indie" class="badge bg-dark border border-secondary text-muted text-decoration-none py-2 px-3">Indie</a>
+          <a href="{% url 'movie_catalog' %}?category=Hip+Hop" class="badge bg-dark border border-secondary text-muted text-decoration-none py-2 px-3">Hip Hop</a>
+          <a href="{% url 'movie_catalog' %}?category=Alternative" class="badge bg-dark border border-secondary text-muted text-decoration-none py-2 px-3">Alternative</a>
+        </div>
+      </div>
+
+      <!-- Col 4: Cloud & Community -->
+      <div class="col-lg-3 col-md-12">
+        <h6 class="footer-title mb-3 text-white fw-semibold">Storage & Tech</h6>
+        <p class="text-muted small">
+          Assets hosted on <strong>Backblaze B2</strong> (IndiMusicTVAssets) and YouTube CDN for ultra-fast, zero-buffer video playback.
+        </p>
+        <div class="card bg-dark border-secondary p-3">
+          <div class="d-flex align-items-center justify-content-between text-white">
+            <span class="small fw-semibold">Cloud Status</span>
+            <span class="badge bg-success-subtle text-success">Online & Connected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="border-secondary my-4 opacity-25">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <div class="text-muted small">
+        &copy; 2026 <strong>CinePulse</strong>. Built with <strong>Python Django</strong> &amp; <strong>Vuexy Template</strong>.
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'movie_catalog' %}" class="text-muted small text-decoration-none">Privacy Policy</a>
+        <span class="text-muted">&bull;</span>
+        <a href="{% url 'movie_catalog' %}" class="text-muted small text-decoration-none">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
