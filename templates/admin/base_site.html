@@ -5,10 +5,8 @@
 
 {% block extrahead %}
 {{ block.super }}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+<link rel="stylesheet" href="{% static 'vendor/fonts/public-sans.css' %}" />
+<link rel="stylesheet" href="{% static 'vendor/fonts/tabler-icons.css' %}" />
 <style>
   :root {
     --primary: #0f172a;

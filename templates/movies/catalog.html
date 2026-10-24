@@ -123,7 +123,7 @@
         <div class="col-xl-4 col-md-6">
           <div class="movie-card card h-100 d-flex flex-column">
             <a href="{{ movie.get_absolute_url }}" class="movie-poster-wrap text-decoration-none">
-              <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500'" loading="lazy" />
+              <img src="{{ movie.get_thumbnail_url }}" alt="{{ movie.title }}" class="movie-poster-img" onerror="this.src='{% static \'img/elements/movie-placeholder.jpg\' %}'" loading="lazy" />
               <span class="badge bg-black bg-opacity-75 text-white position-absolute bottom-0 end-0 m-2 px-2 py-1 small">
                 {{ movie.formatted_duration }}
               </span>
