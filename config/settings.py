@@ -205,4 +205,7 @@ LOGOUT_REDIRECT_URL = "movie_landing"
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
 
+# Referrer Policy for cross-origin embedded media (YouTube, Vimeo, B2)
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 
