@@ -1,50 +1,68 @@
 /* ==========================================================================
-   CinePulse Modern Theme: 1600px Max-Width + Dual Dark/Light Mode
+   IndiMusic TV Modern Theme: 1600px Max-Width + High-Contrast Dual Mode
+   Default: Pure Light (Sada) Mode | Toggle: Crisp Cinematic Dark Mode
    ========================================================================== */
 
-/* 1. Theme Color Tokens */
+/* 1. DEFAULT LIGHT (SADA) MODE TOKENS */
 :root,
-html[data-theme="dark"],
-html.dark-style {
-  --cp-bg-body: #0b0f19;
-  --cp-bg-card: #131b2e;
-  --cp-bg-card-hover: #1a253e;
-  --cp-bg-nav: rgba(11, 15, 25, 0.95);
-  --cp-border: rgba(255, 255, 255, 0.08);
-  --cp-border-hover: rgba(115, 103, 240, 0.5);
-  --cp-text-primary: #ffffff;
-  --cp-text-secondary: #e2e8f0;
-  --cp-text-muted: #94a3b8;
-  --cp-nav-link: #f1f5f9;
-  --cp-nav-link-hover: #7367f0;
-  --cp-input-bg: #1e293b;
-  --cp-input-border: #334155;
-  --cp-input-text: #ffffff;
-  --cp-card-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
-  --cp-footer-bg: #070a12;
-}
-
 html[data-theme="light"],
 html.light-style {
-  --cp-bg-body: #f4f6fa;
+  --cp-bg-body: #f8fafc;
   --cp-bg-card: #ffffff;
-  --cp-bg-card-hover: #f8fafc;
-  --cp-bg-nav: rgba(255, 255, 255, 0.97);
+  --cp-bg-card-hover: #f1f5f9;
+  --cp-bg-nav: #ffffff;
   --cp-border: #e2e8f0;
-  --cp-border-hover: rgba(115, 103, 240, 0.5);
-  --cp-text-primary: #0f172a;
-  --cp-text-secondary: #334155;
-  --cp-text-muted: #64748b;
-  --cp-nav-link: #1e293b;
-  --cp-nav-link-hover: #7367f0;
+  --cp-border-hover: rgba(225, 29, 72, 0.4);
+  --cp-text-primary: #0a0e1a;       /* Pure Obsidian Black */
+  --cp-text-secondary: #1e293b;     /* Deep Slate Black */
+  --cp-text-muted: #475569;         /* High-contrast Slate-600 */
+  --cp-card-title: #0a0e1a;         /* Deep Black for Movie Titles */
+  --cp-card-title-hover: #e11d48;   /* Music Red Accent */
+  --cp-nav-link: #0a0e1a;           /* Deep Black for Navbar Links */
+  --cp-nav-link-hover: #e11d48;
   --cp-input-bg: #ffffff;
   --cp-input-border: #cbd5e1;
-  --cp-input-text: #0f172a;
+  --cp-input-text: #0a0e1a;
   --cp-card-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-  --cp-footer-bg: #0f172a;
+  --cp-footer-bg: #090d16;
+  --cp-pill-bg: #f1f5f9;
+  --cp-pill-text: #0a0e1a;
+  --cp-pill-border: #cbd5e1;
+  --cp-pill-hover-bg: #e11d48;
+  --cp-pill-hover-text: #ffffff;
+  --cp-watch-link: #0a0e1a;
 }
 
-/* 2. Global Body & Width Settings (1600px) */
+/* 2. CINEMATIC DARK MODE TOKENS */
+html[data-theme="dark"],
+html.dark-style {
+  --cp-bg-body: #090d16;
+  --cp-bg-card: #121826;
+  --cp-bg-card-hover: #192236;
+  --cp-bg-nav: rgba(9, 13, 22, 0.96);
+  --cp-border: rgba(255, 255, 255, 0.12);
+  --cp-border-hover: rgba(225, 29, 72, 0.6);
+  --cp-text-primary: #ffffff;       /* Pure Crisp White */
+  --cp-text-secondary: #e2e8f0;     /* Slate-200 Clean Text */
+  --cp-text-muted: #94a3b8;         /* High-contrast Slate-400 */
+  --cp-card-title: #ffffff;         /* Pure White for Movie Titles */
+  --cp-card-title-hover: #fb7185;   /* Bright Coral Red Accent */
+  --cp-nav-link: #ffffff;           /* Crisp White for Navbar Links */
+  --cp-nav-link-hover: #fb7185;
+  --cp-input-bg: #1a2234;
+  --cp-input-border: rgba(255, 255, 255, 0.2);
+  --cp-input-text: #ffffff;
+  --cp-card-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --cp-footer-bg: #05070d;
+  --cp-pill-bg: #1a2234;
+  --cp-pill-text: #ffffff;
+  --cp-pill-border: rgba(255, 255, 255, 0.16);
+  --cp-pill-hover-bg: #e11d48;
+  --cp-pill-hover-text: #ffffff;
+  --cp-watch-link: #ffffff;
+}
+
+/* 3. Global Body & Width Settings (1600px) */
 body {
   background-color: var(--cp-bg-body) !important;
   color: var(--cp-text-secondary) !important;
@@ -65,7 +83,7 @@ body {
   padding-right: 24px !important;
 }
 
-/* 3. Header Navbar: 100% Full-Width Background + 1600px Inner Content */
+/* 4. Header Navbar: 100% Full-Width Background + 1600px Inner Content */
 .cinema-navbar-wrapper {
   width: 100% !important;
   position: sticky !important;
@@ -92,16 +110,16 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #000000;
+  background: #000000 !important;
   padding: 4px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
   transition: all 0.2s ease;
 }
 
 .cinema-brand-logo-wrap:hover {
-  border-color: rgba(225, 29, 72, 0.6);
+  border-color: rgba(225, 29, 72, 0.7);
   box-shadow: 0 3px 14px rgba(225, 29, 72, 0.35);
   transform: translateY(-1px);
 }
@@ -116,7 +134,8 @@ body {
 
 .cinema-navbar-wrapper .nav-link {
   color: var(--cp-nav-link) !important;
-  font-weight: 500;
+  font-weight: 600 !important;
+  font-size: 0.95rem;
   transition: color 0.2s ease;
 }
 
@@ -125,7 +144,28 @@ body {
   color: var(--cp-nav-link-hover) !important;
 }
 
-/* 4. Cards & Components Contrast */
+/* 5. High-Contrast Typography & Headings */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--cp-text-primary) !important;
+  font-weight: 700 !important;
+}
+
+/* Muted / Secondary Text - Clear and crisp in both modes */
+.text-muted,
+.text-white-50 {
+  color: var(--cp-text-muted) !important;
+}
+
+p.text-muted,
+div.text-muted,
+span.text-muted,
+small.text-muted {
+  color: var(--cp-text-muted) !important;
+  font-weight: 500;
+}
+
+/* 6. Movie Cards & Titles (Fix for Dark and Light mode visibility) */
 .card,
 .movie-card,
 .creator-card,
@@ -146,50 +186,108 @@ body {
   border-color: var(--cp-border-hover) !important;
 }
 
-/* Headings in both modes */
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6 {
-  color: var(--cp-text-primary) !important;
+/* CRITICAL: Card Titles and Links - High Contrast Black or White */
+.movie-card h6,
+.movie-card h6 a,
+.creator-card h6,
+.creator-card h6 a,
+.card h5 a,
+.card h6 a,
+a.movie-title {
+  color: var(--cp-card-title) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease;
 }
 
-/* Text helpers */
-.text-white {
-  color: var(--cp-text-primary) !important;
+.movie-card h6 a:hover,
+.creator-card h6 a:hover,
+.card h5 a:hover,
+.card h6 a:hover,
+a.movie-title:hover {
+  color: var(--cp-card-title-hover) !important;
 }
 
-.text-muted,
-.text-white-50 {
-  color: var(--cp-text-muted) !important;
+/* Watch button link inside card bottom */
+.movie-card .btn-link,
+.movie-card a.btn-link {
+  color: var(--cp-watch-link) !important;
+  font-weight: 600 !important;
 }
 
-/* Inputs and Forms */
+.movie-card .btn-link:hover,
+.movie-card a.btn-link:hover {
+  color: var(--cp-card-title-hover) !important;
+}
+
+/* 7. Genre Pills (Browse by Genre) */
+.genre-pill {
+  background-color: var(--cp-pill-bg) !important;
+  color: var(--cp-pill-text) !important;
+  border: 1px solid var(--cp-pill-border) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease;
+}
+
+.genre-pill i {
+  color: var(--cp-pill-text) !important;
+}
+
+.genre-pill .badge {
+  background-color: var(--cp-pill-text) !important;
+  color: var(--cp-bg-card) !important;
+  font-weight: 700;
+}
+
+.genre-pill:hover {
+  background-color: var(--cp-pill-hover-bg) !important;
+  color: var(--cp-pill-hover-text) !important;
+  border-color: var(--cp-pill-hover-bg) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(225, 29, 72, 0.35);
+}
+
+.genre-pill:hover i,
+.genre-pill:hover .badge {
+  background-color: #ffffff !important;
+  color: #e11d48 !important;
+}
+
+/* 8. Inputs, Search and Forms */
 .form-control,
 .form-select {
   background-color: var(--cp-input-bg) !important;
   border-color: var(--cp-input-border) !important;
   color: var(--cp-input-text) !important;
+  font-weight: 500;
 }
 
 .form-control:focus,
 .form-select:focus {
-  border-color: #7367f0 !important;
-  box-shadow: 0 0 0 0.25rem rgba(115, 103, 240, 0.25) !important;
+  border-color: #e11d48 !important;
+  box-shadow: 0 0 0 0.25rem rgba(225, 29, 72, 0.2) !important;
 }
 
 .form-control::placeholder {
   color: var(--cp-text-muted) !important;
 }
 
-/* Links */
-a.text-white {
+/* Live Search Results Dropdown */
+#liveSearchResults {
+  background-color: var(--cp-bg-card) !important;
+  border: 1px solid var(--cp-border) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25) !important;
+}
+
+#liveSearchResults .dropdown-item {
   color: var(--cp-text-primary) !important;
 }
 
-a.text-white:hover {
-  color: #7367f0 !important;
+#liveSearchResults .dropdown-item:hover {
+  background-color: var(--cp-bg-card-hover) !important;
 }
 
-/* 5. Hero Banner Contrast in Both Modes */
+/* 9. Hero Banner Contrast in Both Modes */
 .hero-backdrop {
   position: relative;
   min-height: 540px;
@@ -203,7 +301,7 @@ a.text-white:hover {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(10, 15, 29, 0.95) 0%, rgba(10, 15, 29, 0.8) 50%, rgba(10, 15, 29, 0.35) 100%);
+  background: linear-gradient(90deg, rgba(9, 13, 22, 0.95) 0%, rgba(9, 13, 22, 0.8) 50%, rgba(9, 13, 22, 0.35) 100%);
   display: flex;
   align-items: center;
 }
@@ -214,7 +312,7 @@ a.text-white:hover {
   color: #ffffff !important;
 }
 
-/* 6. Footer */
+/* 10. Footer */
 .landing-footer {
   background-color: var(--cp-footer-bg) !important;
   border-top: 1px solid var(--cp-border) !important;
@@ -232,10 +330,10 @@ a.text-white:hover {
 }
 
 .landing-footer a:hover {
-  color: #7367f0 !important;
+  color: #fb7185 !important;
 }
 
-/* 7. Theme Toggle Button Animation */
+/* 11. Theme Toggle Button */
 .theme-toggle-btn {
   width: 38px;
   height: 38px;
@@ -247,12 +345,19 @@ a.text-white:hover {
   background: var(--cp-bg-card);
   border: 1px solid var(--cp-border);
   color: var(--cp-text-primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: all 0.25s ease;
 }
 
 .theme-toggle-btn:hover {
-  background: #7367f0;
+  background: #0a0e1a;
   color: #ffffff;
-  border-color: #7367f0;
-  transform: rotate(20deg);
+  border-color: #0a0e1a;
+  transform: rotate(25deg);
+}
+
+html[data-theme="dark"] .theme-toggle-btn:hover {
+  background: #ffffff;
+  color: #0a0e1a;
+  border-color: #ffffff;
 }

@@ -90,36 +90,46 @@
 </header>
 
 <script>
-// ==================== CinePulse Dual Theme & Live Search Script ====================
+// ==================== IndiMusic TV Dual Theme & Live Search Script ====================
 (function() {
-  // Theme Management
-  const currentTheme = localStorage.getItem('cinepulse-theme') || 'dark';
+  // Theme Management: Default is Light (Sada) Mode
+  const currentTheme = localStorage.getItem('cinepulse-theme') || 'light';
   applyTheme(currentTheme);
 
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.getElementById('themeToggleIcon');
+    const toggleBtn = document.getElementById('themeToggleBtn');
     if (theme === 'dark') {
       document.documentElement.classList.add('dark-style');
       document.documentElement.classList.remove('light-style');
-      const icon = document.getElementById('themeToggleIcon');
       if (icon) {
-        icon.className = 'ti ti-sun text-warning';
+        icon.className = 'ti ti-sun text-warning fs-5';
+      }
+      if (toggleBtn) {
+        toggleBtn.setAttribute('title', 'Switch to Light Mode');
       }
     } else {
       document.documentElement.classList.add('light-style');
       document.documentElement.classList.remove('dark-style');
-      const icon = document.getElementById('themeToggleIcon');
       if (icon) {
-        icon.className = 'ti ti-moon text-primary';
+        icon.className = 'ti ti-moon text-dark fs-5';
+      }
+      if (toggleBtn) {
+        toggleBtn.setAttribute('title', 'Switch to Dark Mode');
       }
     }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
+    // Re-verify icon state once DOM is fully ready
+    const savedTheme = localStorage.getItem('cinepulse-theme') || 'light';
+    applyTheme(savedTheme);
+
     const toggleBtn = document.getElementById('themeToggleBtn');
     if (toggleBtn) {
       toggleBtn.addEventListener('click', function() {
-        const activeTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        const activeTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         localStorage.setItem('cinepulse-theme', activeTheme);
         applyTheme(activeTheme);
       });

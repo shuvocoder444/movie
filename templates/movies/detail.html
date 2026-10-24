@@ -1,7 +1,7 @@
 {% extends layout_path %}
 {% load static %}
 
-{% block title %}{{ movie.title }} | Watch on CinePulse{% endblock title %}
+{% block title %}{{ movie.title }} | Watch on IndiMusic TV{% endblock title %}
 
 {% block page_css %}
 <style>
@@ -108,7 +108,7 @@
         <div class="p-3 rounded mb-4" style="background: var(--cp-bg-card-hover); border: 1px solid var(--cp-border);">
           <h6 class="text-muted text-uppercase small fw-bold mb-2">Synopsis / Overview</h6>
           <p class="mb-0" style="line-height: 1.7; color: var(--cp-text-secondary);">
-            {{ movie.clean_description|default:"An independent production piece streamed directly via CinePulse network." }}
+            {{ movie.clean_description|default:"An independent production piece streamed directly via IndiMusic TV network." }}
           </p>
         </div>
 

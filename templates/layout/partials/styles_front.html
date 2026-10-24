@@ -25,3 +25,20 @@
 
 <!-- CinePulse Unified Theme CSS: 1600px Max-Width & Dual Dark/Light Mode -->
 <link rel="stylesheet" href="{% static 'css/cinema-theme.css' %}" />
+
+<!-- Early theme initialization: Defaults to Light (Sada) mode -->
+<script>
+  (function() {
+    try {
+      var savedTheme = localStorage.getItem('cinepulse-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-style');
+        document.documentElement.classList.remove('light-style');
+      } else {
+        document.documentElement.classList.add('light-style');
+        document.documentElement.classList.remove('dark-style');
+      }
+    } catch(e) {}
+  })();
+</script>

@@ -1,7 +1,7 @@
 {% extends layout_path %}
 {% load static %}
 
-{% block title %}Filmmakers &amp; Directors | CinePulse Artists{% endblock title %}
+{% block title %}Filmmakers &amp; Directors | IndiMusic TV Artists{% endblock title %}
 
 {% block page_css %}
 <style>
@@ -44,7 +44,7 @@
         </div>
         
         <p class="small mb-4 flex-grow-1" style="font-size: 13px; line-height: 1.5; opacity: 0.85;">
-          {{ creator.clean_headline|default:creator.clean_description|truncatewords:15|default:"Creator on the CinePulse media network." }}
+          {{ creator.clean_headline|default:creator.clean_description|truncatewords:15|default:"Creator on the IndiMusic TV media network." }}
         </p>
         
         <div class="mt-auto w-100 pt-3 border-top" style="border-color: var(--cp-border) !important;">
