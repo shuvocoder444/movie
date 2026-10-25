@@ -29,6 +29,14 @@ class SiteSettingAdmin(admin.ModelAdmin):
             "description": "Customize announcement banners, footer about biography, and copyright statement.",
             "fields": ("header_announcement", "footer_about_text", "copyright_text"),
         }),
+        ("🎬 Hero Section & Live Sidebar", {
+            "description": "Control the visibility and title of the Latest Videos sidebar next to the Live Stream in the hero section.",
+            "fields": ("show_hero_sidebar", "hero_sidebar_title"),
+        }),
+        ("☁️ Backblaze B2 Video Cloud Storage", {
+            "description": "Configure your Backblaze B2 credentials to seamlessly stream 199+ GB of video assets from your private bucket.",
+            "fields": ("b2_key_id", "b2_application_key", "b2_bucket_id", "b2_bucket_name", "b2_download_url"),
+        }),
     )
 
     def logo_preview(self, obj):

@@ -52,22 +52,22 @@ class MovieLandingView(BaseMovieView, View):
     def get(self, request):
         context = self.get_layout_context(request)
 
-        # 1. Hero Featured Movies (with valid video/youtube)
+        # 1. Hero Featured Movies (Playable videos)
         hero_movies = (
-            Movie.objects.filter(youtube_id__gt="", views__gt=100)
-            .order_by("-views")[:6]
+            Movie.objects.filter(has_video=True)
+            .order_by("-views", "-rating")[:6]
         )
         if not hero_movies.exists():
-            hero_movies = Movie.objects.all()[:6]
+            hero_movies = Movie.objects.filter(has_video=True)[:6]
 
-        # 2. Trending Movies (Highest Views)
-        trending_movies = Movie.objects.all().order_by("-views")[:12]
+        # 2. Trending Movies (Highest Views with valid video)
+        trending_movies = Movie.objects.filter(has_video=True).order_by("-views")[:12]
 
         # 3. Top Rated Movies
-        top_rated_movies = Movie.objects.filter(rating__gte=4.0).order_by("-rating", "-views")[:12]
+        top_rated_movies = Movie.objects.filter(has_video=True, rating__gte=4.0).order_by("-rating", "-views")[:12]
 
-        # 4. Latest Added Movies
-        latest_movies = Movie.objects.filter(created_at__isnull=False).order_by("-created_at")[:12]
+        # 4. Latest Added Movies (Playable)
+        latest_movies = Movie.objects.filter(has_video=True, created_at__isnull=False).order_by("-created_at")[:12]
 
         # 5. Categories with counts
         top_categories = (
@@ -117,7 +117,7 @@ class MovieCatalogView(BaseMovieView, View):
         sort_by = request.GET.get("sort", "views")
         min_rating = request.GET.get("rating", "")
 
-        movies = Movie.objects.all()
+        movies = Movie.objects.filter(has_video=True)
 
         if query:
             movies = movies.filter(
@@ -174,22 +174,34 @@ class MovieCatalogView(BaseMovieView, View):
 
 class MovieDetailView(BaseMovieView, View):
     """Movie Player & Details View with Comments and Recommendations."""
-    def get(self, request, pk, slug=None):
+    def get(self, request, slug=None, pk=None):
+        if slug:
+            movie = get_object_or_404(Movie, slug=slug)
+        elif pk:
+            movie = get_object_or_404(Movie, pk=pk)
+            # 301 Permanent SEO Redirect to slug URL
+            if movie.slug:
+                return redirect("movie_detail", slug=movie.slug, permanent=True)
+        else:
+            return redirect("movie_catalog")
+
         context = self.get_layout_context(request)
-        movie = get_object_or_404(Movie, pk=pk)
 
         # Increment view count
-        Movie.objects.filter(pk=pk).update(views=movie.views + 1)
+        Movie.objects.filter(pk=movie.id).update(views=movie.views + 1)
         movie.views += 1
 
-        # Related movies
+        # Related movies (Playable)
         related_movies = (
-            Movie.objects.filter(
+            Movie.objects.filter(has_video=True)
+            .filter(
                 Q(category_name=movie.category_name) | Q(tags__icontains=movie.category_name)
             )
-            .exclude(pk=pk)
+            .exclude(pk=movie.id)
             .order_by("-views")[:6]
         )
+        if not related_movies.exists():
+            related_movies = Movie.objects.filter(has_video=True).exclude(pk=movie.id).order_by("-views")[:6]
 
         # Comments: filter out empty tags / spam
         raw_comments = movie.comments.all().select_related("author").order_by("-created_at")[:60]
@@ -203,21 +215,38 @@ class MovieDetailView(BaseMovieView, View):
         })
         return render(request, "movies/detail.html", context)
 
-    def post(self, request, pk, slug=None):
-        movie = get_object_or_404(Movie, pk=pk)
+    def post(self, request, slug=None, pk=None):
+        if slug:
+            movie = get_object_or_404(Movie, slug=slug)
+        elif pk:
+            movie = get_object_or_404(Movie, pk=pk)
+        else:
+            return redirect("movie_catalog")
+
         text = request.POST.get("comment", "").strip()
-        author_name = request.POST.get("author_name", "Anonymous Movie Buff").strip()
+        author_name = request.POST.get("author_name", "").strip()
 
         if text:
+            author = None
+            if request.user.is_authenticated:
+                author = getattr(request.user, "profile", None)
+                author_name = request.user.get_full_name() or request.user.username
+            elif not author_name:
+                author_name = "Viewer"
+
+            import time
+            new_id = int(time.time() * 1000) % 2147483647
             MovieComment.objects.create(
+                id=new_id,
                 movie=movie,
-                author_name=author_name or "Guest",
+                author=author,
+                author_name=author_name,
                 text=text,
                 rating=5,
             )
-            Movie.objects.filter(pk=pk).update(comments_count=movie.comments_count + 1)
+            Movie.objects.filter(pk=movie.id).update(comments_count=movie.comments_count + 1)
 
-        return redirect("movie_detail", pk=movie.id, slug=movie.slug or f"movie-{movie.id}")
+        return redirect(movie.get_absolute_url())
 
 
 class CreatorListView(BaseMovieView, View):

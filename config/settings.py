@@ -17,17 +17,19 @@ from dotenv import load_dotenv
 
 from .template import TEMPLATE_CONFIG, THEME_LAYOUT_DIR, THEME_VARIABLES
 
-load_dotenv()  # take environment variables from .env.
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# take environment variables from .env located in BASE_DIR
+load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR / '.env.prod')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", default='')
+SECRET_KEY = os.environ.get("SECRET_KEY", default='K5tRjVxP9qCwZ2gH8sN6mT3dF7aK1pW4eX7yV9uL6kG3jB2tR8qE5zA1rC')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!

@@ -52,79 +52,128 @@
     color: var(--cp-text-primary);
   }
   .genre-pill:hover {
-    background: #7367f0 !important;
+    background: #ca0004 !important;
     color: #fff !important;
+    border-color: #ca0004 !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(115, 103, 240, 0.4);
+    box-shadow: 0 6px 15px rgba(202, 0, 4, 0.4);
   }
 </style>
 {% endblock page_css %}
 
 {% block content %}
-<div class="container-xxl py-4">
+<div class="container-xxl pt-1 pb-4">
 
-  <!-- ==================== 1. HERO BANNER SECTION ==================== -->
-  {% if hero_featured %}
-  <section class="hero-section mb-5">
-    <div class="hero-backdrop" style="background-image: url('{{ hero_featured.get_thumbnail_url }}');">
-      <div class="hero-overlay p-4 p-md-5">
-        <div class="row align-items-center w-100">
-          <div class="col-lg-8 col-md-10 text-white">
-            <div class="d-flex align-items-center gap-2 mb-3">
-              <span class="badge bg-danger px-3 py-2 text-uppercase fw-bold shadow-sm">
-                <i class="ti ti-flame me-1"></i> Featured Premiere
+  <!-- ==================== 1. LIVE STREAM HERO SECTION ==================== -->
+  <section class="hero-live-section mb-4" style="max-width: 1600px; margin: 0 auto;">
+    {% if site_settings.show_hero_sidebar %}
+    <!-- SIDEBAR ENABLED: 8 Cols Live Video + 4 Cols Latest Videos (Equal Height) -->
+    <div class="row g-3 align-items-stretch">
+      <!-- LEFT: Live Video (col-lg-8) -->
+      <div class="col-lg-8 d-flex flex-column">
+        <div class="card overflow-hidden shadow-2xl border-0 h-100 d-flex flex-column" style="border-radius: 14px; background: #000000;">
+          <!-- Title Bar directly above video -->
+          <div class="py-2 px-3 d-flex align-items-center justify-content-between text-white flex-shrink-0" style="background: #090d16; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-danger px-2 py-1 text-uppercase fw-bold d-flex align-items-center shadow-sm" style="font-size: 0.75rem;">
+                <span class="spinner-grow spinner-grow-sm me-1" role="status" aria-hidden="true" style="width: 0.55rem; height: 0.55rem;"></span> LIVE NOW
               </span>
-              {% if hero_featured.category_name %}
-              <span class="badge bg-primary px-3 py-2 fw-semibold">
-                {{ hero_featured.category_name }}
-              </span>
-              {% endif %}
-              <span class="badge bg-dark border border-secondary text-white px-2 py-1">
-                <i class="ti ti-clock me-1"></i> {{ hero_featured.formatted_duration }}
+              <h6 class="mb-0 fw-bold text-white d-flex align-items-center" style="font-size: 0.95rem;">
+                IndiMusic TV Official Broadcast
+              </h6>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge px-2 py-1 d-none d-sm-inline-block text-white fw-semibold" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; color: #ffffff !important;">
+                <i class="ti ti-broadcast me-1 text-danger"></i> 24/7 Broadcast
               </span>
             </div>
+          </div>
+          <!-- Video Embed Frame -->
+          <div class="flex-grow-1" style="position: relative; width: 100%; background: #000000;">
+            <iframe src="https://platform.wim.tv/embed/?cast=dd4b67a9-36f9-4c1d-be07-3920ee9578cb" allowfullscreen="" allow="autoplay" style="border: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;" loading="lazy"></iframe>
+            <div style="padding-top: 56.25%;"></div>
+          </div>
+        </div>
+      </div>
 
-            <h1 class="display-5 fw-bold text-white mb-3" style="text-shadow: 0 4px 12px rgba(0,0,0,0.8);">
-              {{ hero_featured.title }}
-            </h1>
-
-            <p class="text-white fs-6 mb-4 line-clamp-3" style="max-width: 680px; line-height: 1.6; opacity: 0.95;">
-              {{ hero_featured.clean_description|truncatewords:40|default:"Experience this outstanding cinema piece from independent filmmakers. Stream in high definition right now." }}
-            </p>
-
-            <div class="d-flex align-items-center gap-3 mb-4">
-              <div class="d-flex align-items-center text-warning fs-5">
-                <i class="ti ti-star-filled me-1"></i>
-                <span class="fw-bold text-white">{{ hero_featured.rating|floatformat:1 }}</span>
-                <span class="text-white-50 small ms-1">({{ hero_featured.rating_count }} ratings)</span>
-              </div>
-              <span class="text-white-50">&bull;</span>
-              <div class="text-white small">
-                <i class="ti ti-eye me-1"></i> {{ hero_featured.formatted_views }} views
-              </div>
-              <span class="text-white-50">&bull;</span>
-              <div class="text-white small">
-                <i class="ti ti-message-circle me-1"></i> {{ hero_featured.comments_count }} reviews
-              </div>
+      <!-- RIGHT: Latest Videos Sidebar (col-lg-4) Matching Height -->
+      <div class="col-lg-4 d-flex flex-column">
+        <div class="card hero-sidebar-card overflow-hidden shadow-2xl border-0 h-100 d-flex flex-column" style="border-radius: 14px;">
+          <!-- Sidebar Header -->
+          <div class="py-2 px-3 d-flex align-items-center justify-content-between text-white flex-shrink-0" style="background: #090d16; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div class="d-flex align-items-center gap-2">
+              <i class="ti ti-sparkles text-warning fs-5"></i>
+              <h6 class="mb-0 fw-bold text-white" style="font-size: 0.95rem;">
+                {{ site_settings.hero_sidebar_title|default:"Latest Releases" }}
+              </h6>
             </div>
+            <a href="{% url 'movie_catalog' %}" class="small text-primary text-decoration-none fw-semibold">
+              View All &raquo;
+            </a>
+          </div>
 
-            <div class="d-flex flex-wrap gap-3">
-              <a href="{{ hero_featured.get_absolute_url }}" class="btn btn-primary btn-lg shadow-lg px-4 py-3 d-flex align-items-center">
-                <i class="ti ti-player-play-filled fs-4 me-2"></i> Watch Movie Now
-              </a>
-              <a href="{% url 'movie_catalog' %}" class="btn btn-outline-light btn-lg px-4 py-3 d-flex align-items-center">
-                <i class="ti ti-layout-grid me-2"></i> Explore 2,780+ Titles
-              </a>
+          <!-- Scrollable Video List matching video height -->
+          <div class="p-2 d-flex flex-column gap-2 flex-grow-1 custom-hero-scrollbar" style="overflow-y: auto; max-height: 485px;">
+            {% for item in latest_movies|slice:":7" %}
+            <a href="{{ item.get_absolute_url }}" class="d-flex align-items-center gap-2 p-2 rounded text-decoration-none hero-sidebar-item">
+              <div class="position-relative flex-shrink-0" style="width: 95px; height: 56px; border-radius: 6px; overflow: hidden; background: #000;">
+                <img src="{{ item.get_thumbnail_url }}" alt="{{ item.title }}" class="w-100 h-100 object-fit-cover" onerror="this.src='{% static "img/elements/movie-placeholder.jpg" %}'" />
+                <span class="badge bg-black bg-opacity-75 text-white position-absolute bottom-0 end-0 m-1 px-1" style="font-size: 9px; line-height: 1.2;">
+                  {{ item.formatted_duration }}
+                </span>
+              </div>
+              <div class="overflow-hidden flex-grow-1">
+                <h6 class="mb-1 text-truncate fw-semibold hero-sidebar-title" style="font-size: 0.85rem;" title="{{ item.title }}">
+                  {{ item.title }}
+                </h6>
+                <div class="d-flex align-items-center gap-2 hero-sidebar-meta" style="font-size: 11px;">
+                  <span class="badge bg-primary bg-opacity-25 text-primary px-1 py-0" style="font-size: 10px;">{{ item.category_name|default:"Music" }}</span>
+                  <span>&bull;</span>
+                  <span><i class="ti ti-eye me-1"></i>{{ item.formatted_views }}</span>
+                </div>
+              </div>
+            </a>
+            {% empty %}
+            <div class="text-center py-5 text-muted small">
+              <i class="ti ti-video-off fs-1 d-block mb-2"></i>
+              No latest releases found.
             </div>
+            {% endfor %}
           </div>
         </div>
       </div>
     </div>
+
+    {% else %}
+    <!-- FULL WIDTH HERO VIDEO (When Sidebar is Hidden in Admin Dashboard) -->
+    <div class="card overflow-hidden shadow-2xl border-0" style="border-radius: 14px; background: #000000; margin: 0 auto; max-width: 1600px; width: 100%;">
+      <!-- Title Bar directly above video -->
+      <div class="py-2 px-3 d-flex align-items-center justify-content-between text-white" style="background: #090d16; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-danger px-2 py-1 text-uppercase fw-bold d-flex align-items-center shadow-sm" style="font-size: 0.75rem;">
+            <span class="spinner-grow spinner-grow-sm me-1" role="status" aria-hidden="true" style="width: 0.55rem; height: 0.55rem;"></span> LIVE NOW
+          </span>
+          <h6 class="mb-0 fw-bold text-white d-flex align-items-center" style="font-size: 0.95rem;">
+            IndiMusic TV Official Broadcast
+          </h6>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge px-2 py-1 d-none d-md-inline-block text-white fw-semibold" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; color: #ffffff !important;">
+            <i class="ti ti-broadcast me-1 text-danger"></i> 24/7 Broadcast
+          </span>
+        </div>
+      </div>
+      <!-- Video Embed (Full 16:9 to keep volume, play/pause, projection controls 100% visible) -->
+      <div style="position: relative; width: 100%; display: inline-block; background: #000000;">
+        <iframe src="https://platform.wim.tv/embed/?cast=dd4b67a9-36f9-4c1d-be07-3920ee9578cb" allowfullscreen="" allow="autoplay" style="border: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+        <div style="padding-top: 56.25%;"></div>
+      </div>
+    </div>
+    {% endif %}
   </section>
-  {% endif %}
 
   <!-- ==================== STATS STRIP ==================== -->
-  <div class="row g-3 mb-5 text-center">
+  <div class="row g-3 mb-4 text-center">
     <div class="col-6 col-md-3">
       <div class="card p-3 shadow-sm h-100">
         <i class="ti ti-movie fs-1 text-primary mb-1"></i>
@@ -148,9 +197,9 @@
     </div>
     <div class="col-6 col-md-3">
       <div class="card p-3 shadow-sm h-100">
-        <i class="ti ti-cloud-lock fs-1 text-info mb-1"></i>
-        <h4 class="fw-bold mb-0">Backblaze B2</h4>
-        <small class="text-muted">Fast Cloud Media</small>
+        <i class="ti ti-device-tv fs-1 text-info mb-1"></i>
+        <h4 class="fw-bold mb-0">24/7 Live</h4>
+        <small class="text-muted">Continuous Music Broadcast</small>
       </div>
     </div>
   </div>

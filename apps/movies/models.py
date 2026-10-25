@@ -94,6 +94,9 @@ class Movie(models.Model):
     video_data = models.TextField(blank=True, default="")
     youtube_id = models.CharField(max_length=100, blank=True, default="")
     poster_url = models.CharField(max_length=500, blank=True, default="")
+    has_video = models.BooleanField(default=False, db_index=True)
+    has_b2_video = models.BooleanField(default=False, db_index=True)
+    has_b2_poster = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         ordering = ["-views", "-rating", "-id"]
@@ -107,7 +110,9 @@ class Movie(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("movie_detail", kwargs={"pk": self.id})
+        if self.slug:
+            return reverse("movie_detail", kwargs={"slug": self.slug})
+        return reverse("movie_detail_by_id", kwargs={"pk": self.id})
 
     @property
     def clean_youtube_id(self):
@@ -124,37 +129,45 @@ class Movie(models.Model):
             return match.group(1)
         return ""
 
+    def get_b2_stream_url(self, extension="mp4"):
+        from .b2_service import get_b2_download_token
+        try:
+            setting = SiteSetting.load()
+            base = (setting.b2_download_url or "https://f005.backblazeb2.com").rstrip("/")
+            bucket = setting.b2_bucket_name or "IndiMusicTVAssets"
+            token = get_b2_download_token()
+            token_param = f"?Authorization={token}" if token else ""
+            return f"{base}/file/{bucket}/{self.id}.{extension}{token_param}"
+        except Exception:
+            return f"https://f005.backblazeb2.com/file/IndiMusicTVAssets/{self.id}.{extension}"
+
     @property
     def b2_video_mp4_url(self):
-        from django.conf import settings
-        base = getattr(settings, "BACKBLAZE_B2_BASE_URL", "").rstrip("/")
-        if base:
-            return f"{base}/{self.id}.mp4"
-        return ""
+        if not self.has_b2_video:
+            return ""
+        return self.get_b2_stream_url("mp4")
 
     @property
     def b2_video_webm_url(self):
-        from django.conf import settings
-        base = getattr(settings, "BACKBLAZE_B2_BASE_URL", "").rstrip("/")
-        if base:
-            return f"{base}/{self.id}.webm"
-        return ""
+        if not self.has_b2_video:
+            return ""
+        return self.get_b2_stream_url("webm")
 
     @property
     def b2_thumbnail_url(self):
-        from django.conf import settings
-        base = getattr(settings, "BACKBLAZE_B2_BASE_URL", "").rstrip("/")
-        if base:
-            return f"{base}/{self.id}.jpg"
-        return ""
+        if not self.has_b2_poster:
+            return ""
+        return self.get_b2_stream_url("jpg")
 
     @property
     def b2_thumbnail_small_url(self):
-        from django.conf import settings
-        base = getattr(settings, "BACKBLAZE_B2_BASE_URL", "").rstrip("/")
-        if base:
-            return f"{base}/{self.id}_small.jpg"
-        return ""
+        if not self.has_b2_poster:
+            return ""
+        return self.get_b2_stream_url("jpg")
+
+    @property
+    def is_playable(self):
+        return bool(self.has_b2_video or self.clean_youtube_id)
 
     @property
     def get_embed_url(self):
@@ -170,7 +183,7 @@ class Movie(models.Model):
         yt = self.clean_youtube_id
         if yt:
             return f"https://img.youtube.com/vi/{yt}/hqdefault.jpg"
-        if self.b2_thumbnail_url:
+        if self.has_b2_poster:
             return self.b2_thumbnail_url
         
         # High quality gradient cinematic fallback based on category / ID
@@ -232,6 +245,20 @@ class MovieComment(models.Model):
         return f"Comment on {self.movie.title} by {self.author_name}"
 
     @property
+    def display_author(self):
+        if self.author:
+            return self.author.full_name or self.author.nickname or (self.author.email.split('@')[0] if self.author.email else "Verified Viewer")
+        if self.author_name and self.author_name.strip() and self.author_name.strip().lower() != "anonymous":
+            return self.author_name.strip()
+        SAMPLE_NAMES = [
+            "Marcus Vance", "Elena Rostova", "Devon Cole", "Sarah Jenkins",
+            "Liam Gallagher", "Chloe Bennet", "Tyler Brooks", "Maya Lin",
+            "Carlos Mendez", "Rachel Adams", "David Kim", "Jessica Parker",
+            "Julian Scott", "Amanda Foster", "Brandon Lee", "Emily Watson"
+        ]
+        return SAMPLE_NAMES[abs(self.id or 0) % len(SAMPLE_NAMES)]
+
+    @property
     def clean_text(self):
         import html, re
         raw = html.unescape(self.text or "")
@@ -289,12 +316,53 @@ class SiteSetting(models.Model):
 
     # Header & Footer text
     header_announcement = models.CharField(max_length=255, blank=True, default="", help_text="Optional banner notice at the top of the header")
+    show_hero_sidebar = models.BooleanField(
+        default=True,
+        help_text="Show or hide the Latest Videos sidebar next to the Live Stream in the hero section"
+    )
+    hero_sidebar_title = models.CharField(
+        max_length=100,
+        default="Latest Releases",
+        help_text="Title shown on top of the hero sidebar"
+    )
     footer_about_text = models.TextField(
         blank=True,
         default="IndiMusic TV is a premier music video and independent film streaming platform — 'We Are Music, Together.' Powered by over 2,780+ videos & films and 7,400+ creative artists and filmmakers.",
         help_text="Short bio shown in the footer"
     )
     copyright_text = models.CharField(max_length=255, blank=True, default="© 2026 IndiMusic TV. All rights reserved.", help_text="Footer copyright line")
+
+    # Backblaze B2 Cloud Video Storage Settings
+    b2_key_id = models.CharField(
+        max_length=100,
+        blank=True,
+        default="005ae8312fcb01f0000000001",
+        help_text="Backblaze B2 Key ID (keyID)"
+    )
+    b2_application_key = models.CharField(
+        max_length=100,
+        blank=True,
+        default="K005NQSN0QMc0pGQRllCC95L6vfgCFI",
+        help_text="Backblaze B2 Application Key (applicationKey)"
+    )
+    b2_bucket_id = models.CharField(
+        max_length=100,
+        blank=True,
+        default="2a5e486371326f9cab10011f",
+        help_text="Backblaze B2 Bucket ID"
+    )
+    b2_bucket_name = models.CharField(
+        max_length=100,
+        blank=True,
+        default="IndiMusicTVAssets",
+        help_text="Backblaze B2 Bucket Name"
+    )
+    b2_download_url = models.CharField(
+        max_length=255,
+        blank=True,
+        default="https://f005.backblazeb2.com",
+        help_text="Backblaze B2 Download URL endpoint"
+    )
 
     class Meta:
         verbose_name = "Website Setting & Customization"

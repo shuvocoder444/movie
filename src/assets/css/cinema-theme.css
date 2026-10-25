@@ -105,17 +105,22 @@ body {
   padding-right: 24px !important;
 }
 
-/* 4. Header Navbar: 100% Full-Width Background + 1600px Inner Content */
-.cinema-navbar-wrapper {
+/* 4. Header Navbar: 100% Full-Width Background (#090d16) in both Dark and Light mode */
+.cinema-navbar-wrapper,
+html[data-theme="light"] .cinema-navbar-wrapper,
+html[data-theme="dark"] .cinema-navbar-wrapper,
+.light-style .cinema-navbar-wrapper,
+.dark-style .cinema-navbar-wrapper {
   width: 100% !important;
   position: sticky !important;
   top: 0 !important;
   z-index: 1080 !important;
-  background: var(--cp-bg-nav) !important;
+  background: #090d16 !important;
+  background-color: #090d16 !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  border-bottom: 1px solid var(--cp-border) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
   transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
@@ -127,37 +132,108 @@ body {
   padding-right: 24px !important;
 }
 
-/* Brand Logo Styling */
-.cinema-brand-logo-wrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #000000 !important;
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-  transition: all 0.2s ease;
-}
-
-.cinema-brand-logo-wrap:hover {
-  border-color: rgba(225, 29, 72, 0.7);
-  box-shadow: 0 3px 14px rgba(225, 29, 72, 0.35);
-  transform: translateY(-1px);
+/* Brand Logo Styling: NO background, NO border, NO shadow */
+.cinema-brand-logo-wrap,
+.cinema-brand-logo-wrap:hover,
+a.navbar-brand .cinema-brand-logo-wrap,
+a.navbar-brand:hover .cinema-brand-logo-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .cinema-brand-logo {
-  height: 42px;
-  width: auto;
-  max-width: 140px;
-  object-fit: contain;
-  display: block;
+  height: 44px !important;
+  width: auto !important;
+  max-width: 160px !important;
+  object-fit: contain !important;
+  display: block !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .cinema-navbar-wrapper .nav-link {
-  color: var(--cp-nav-link) !important;
+  color: #f1f5f9 !important;
   font-weight: 600 !important;
   font-size: 0.95rem;
+}
+
+.cinema-navbar-wrapper .nav-link:hover,
+.cinema-navbar-wrapper .nav-link:focus,
+.cinema-navbar-wrapper .nav-link.active {
+  color: #ca0004 !important;
+}
+
+.cinema-navbar-wrapper .navbar-toggler {
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* User Profile Button in Header: Always #090d16 background & white text, even on hover */
+.cinema-navbar-wrapper #userMenuBtn,
+.cinema-navbar-wrapper #userMenuBtn:hover,
+.cinema-navbar-wrapper #userMenuBtn:focus,
+.cinema-navbar-wrapper #userMenuBtn:active,
+.cinema-navbar-wrapper .cinema-user-btn,
+.cinema-navbar-wrapper .cinema-user-btn:hover,
+.cinema-navbar-wrapper .cinema-user-btn:focus,
+.cinema-navbar-wrapper .cinema-user-btn:active,
+.cinema-navbar-wrapper .btn-outline-primary,
+.cinema-navbar-wrapper .btn-outline-primary:hover,
+.cinema-navbar-wrapper .btn-outline-primary:focus {
+  background-color: #090d16 !important;
+  background: #090d16 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: none !important;
+}
+
+.cinema-navbar-wrapper #userMenuBtn *,
+.cinema-navbar-wrapper .cinema-user-btn * {
+  color: #ffffff !important;
+}
+
+.cinema-navbar-wrapper #userMenuBtn:hover,
+.cinema-navbar-wrapper .cinema-user-btn:hover {
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  background-color: #090d16 !important;
+  background: #090d16 !important;
+}
+
+/* Submenu dropdown styles & Hover behavior */
+.cinema-navbar-wrapper .dropdown-menu {
+  background-color: #0b0f19 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 8px !important;
+  z-index: 1095 !important;
+}
+
+.cinema-navbar-wrapper .dropdown-item {
+  color: #cbd5e1 !important;
+  transition: all 0.15s ease;
+}
+
+.cinema-navbar-wrapper .dropdown-item:hover,
+.cinema-navbar-wrapper .dropdown-item:focus {
+  background-color: #ca0004 !important;
+  color: #ffffff !important;
+}
+
+@media (min-width: 992px) {
+  .cinema-navbar-wrapper .nav-item.dropdown:hover > .dropdown-menu {
+    display: block !important;
+    margin-top: 0;
+  }
+}
   transition: color 0.2s ease;
 }
 
@@ -418,7 +494,86 @@ a.movie-title:hover {
 }
 
 
-/* 11. Theme Toggle Button */
+/* 12. Hero Section Sidebar Styles: Perfect Dual Mode Contrast */
+.hero-sidebar-card {
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.hero-sidebar-item {
+  transition: all 0.2s ease !important;
+}
+
+/* Light Mode: White Background + Black Titles */
+html[data-theme="light"] .hero-sidebar-card,
+.light-style .hero-sidebar-card {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+html[data-theme="light"] .hero-sidebar-title,
+.light-style .hero-sidebar-title {
+  color: #0a0e1a !important; /* Pure Black in Light Mode */
+}
+
+html[data-theme="light"] .hero-sidebar-meta,
+.light-style .hero-sidebar-meta {
+  color: #64748b !important;
+}
+
+html[data-theme="light"] .hero-sidebar-item {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+html[data-theme="light"] .hero-sidebar-item:hover {
+  background: #fef2f2 !important;
+  border-color: #ca0004 !important;
+  transform: translateX(4px);
+}
+
+/* Dark Mode: Dark Background + Pure White Titles */
+html[data-theme="dark"] .hero-sidebar-card,
+.dark-style .hero-sidebar-card {
+  background-color: #0b0f19 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-theme="dark"] .hero-sidebar-title,
+.dark-style .hero-sidebar-title {
+  color: #ffffff !important; /* Pure White in Dark Mode */
+}
+
+html[data-theme="dark"] .hero-sidebar-meta,
+.dark-style .hero-sidebar-meta {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] .hero-sidebar-item {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] .hero-sidebar-item:hover {
+  background: rgba(202, 0, 4, 0.18) !important;
+  border-color: rgba(202, 0, 4, 0.5) !important;
+  transform: translateX(4px);
+}
+
+.custom-hero-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-hero-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+.custom-hero-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+.custom-hero-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #ca0004;
+}
 .theme-toggle-btn {
   width: 38px;
   height: 38px;
@@ -427,22 +582,126 @@ a.movie-title:hover {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: var(--cp-bg-card);
-  border: 1px solid var(--cp-border);
-  color: var(--cp-text-primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   transition: all 0.25s ease;
 }
 
 .theme-toggle-btn:hover {
-  background: #0a0e1a;
-  color: #ffffff;
-  border-color: #0a0e1a;
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
   transform: rotate(25deg);
 }
 
 html[data-theme="dark"] .theme-toggle-btn:hover {
-  background: #ffffff;
-  color: #0a0e1a;
-  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #f59e0b !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
+
+/* ==========================================================================
+   PRIMARY COLOR OVERRIDE: #ca0004 (Cinematic Red) replacing #685dd8 / #7367f0
+   ========================================================================== */
+:root,
+html,
+body {
+  --bs-primary: #ca0004 !important;
+  --bs-primary-rgb: 202, 0, 4 !important;
+  --bs-link-color: #ca0004 !important;
+  --bs-link-hover-color: #a30003 !important;
+  --bs-primary-border-subtle: rgba(202, 0, 4, 0.25) !important;
+  --bs-primary-bg-subtle: rgba(202, 0, 4, 0.1) !important;
+}
+
+/* Primary Buttons */
+.btn-primary {
+  background-color: #ca0004 !important;
+  border-color: #ca0004 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(202, 0, 4, 0.35) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary.dropdown-toggle {
+  background-color: #a80003 !important;
+  border-color: #a80003 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(202, 0, 4, 0.5) !important;
+}
+
+/* Outline Buttons */
+.btn-outline-primary {
+  color: #ca0004 !important;
+  border-color: #ca0004 !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active,
+.btn-outline-primary.active {
+  background-color: #ca0004 !important;
+  border-color: #ca0004 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(202, 0, 4, 0.3) !important;
+}
+
+/* Primary Text, Links & Badges */
+.text-primary,
+a.text-primary,
+.text-primary:hover,
+a.text-primary:hover {
+  color: #ca0004 !important;
+}
+.bg-primary {
+  background-color: #ca0004 !important;
+  color: #ffffff !important;
+}
+.badge.bg-primary {
+  background-color: #ca0004 !important;
+  color: #ffffff !important;
+}
+.badge.bg-label-primary {
+  background-color: rgba(202, 0, 4, 0.12) !important;
+  color: #ca0004 !important;
+}
+
+/* Pagination */
+.page-item.active .page-link {
+  background-color: #ca0004 !important;
+  border-color: #ca0004 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(202, 0, 4, 0.35) !important;
+}
+.page-link {
+  color: #ca0004;
+}
+.page-link:hover {
+  color: #a80003;
+}
+
+/* Form inputs & checkboxes */
+.form-check-input:checked {
+  background-color: #ca0004 !important;
+  border-color: #ca0004 !important;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: #ca0004 !important;
+  box-shadow: 0 0 0 0.25rem rgba(202, 0, 4, 0.2) !important;
+}
+
+/* Tab & Nav Links */
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  background-color: #ca0004 !important;
+  color: #ffffff !important;
+}
+.nav-tabs .nav-link.active {
+  border-bottom-color: #ca0004 !important;
+  color: #ca0004 !important;
+}
+

@@ -3,6 +3,26 @@
 
 {% block title %}{{ movie.title }} | Watch on IndiMusic TV{% endblock title %}
 
+{% block meta_tags %}
+<meta name="description" content="{{ movie.clean_description|default:movie.title|truncatechars:160 }}" />
+<meta name="keywords" content="{{ movie.tags|default:movie.category_name }}, music video, indimusic tv, {{ movie.title }}" />
+<link rel="canonical" href="{{ request.build_absolute_uri }}" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="video.other" />
+<meta property="og:url" content="{{ request.build_absolute_uri }}" />
+<meta property="og:title" content="{{ movie.title }} | Watch on IndiMusic TV" />
+<meta property="og:description" content="{{ movie.clean_description|default:movie.title|truncatechars:160 }}" />
+<meta property="og:image" content="{{ movie.get_thumbnail_url }}" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="{{ request.build_absolute_uri }}" />
+<meta property="twitter:title" content="{{ movie.title }} | Watch on IndiMusic TV" />
+<meta property="twitter:description" content="{{ movie.clean_description|default:movie.title|truncatechars:160 }}" />
+<meta property="twitter:image" content="{{ movie.get_thumbnail_url }}" />
+{% endblock meta_tags %}
+
 {% block page_css %}
 <style>
   .player-wrapper {
@@ -61,7 +81,7 @@
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
             allowfullscreen>
           </iframe>
-        {% elif movie.b2_video_mp4_url %}
+        {% elif movie.has_b2_video and movie.b2_video_mp4_url %}
           <video 
             id="movieVideoPlayer" 
             controls 
@@ -76,10 +96,10 @@
             Your browser does not support the video player.
           </video>
         {% else %}
-          <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center p-4">
-            <i class="ti ti-video-off fs-1 text-muted mb-2"></i>
-            <h5>Video Stream Unavailable</h5>
-            <p class="text-muted small">This title's media stream is being processed on Backblaze B2 cloud storage.</p>
+          <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center p-4" style="min-height: 380px; background: #090d16;">
+            <i class="ti ti-video-off fs-1 text-warning mb-2"></i>
+            <h5 class="text-white">Video Stream Inactive</h5>
+            <p class="text-muted small mb-0">This title's media stream is currently being prepared for streaming.</p>
           </div>
         {% endif %}
       </div>
@@ -91,7 +111,7 @@
             {% if movie.clean_youtube_id %}
             <span class="badge bg-danger px-3 py-1 mb-2"><i class="ti ti-brand-youtube me-1"></i> YouTube HD</span>
             {% else %}
-            <span class="badge bg-info px-3 py-1 mb-2"><i class="ti ti-cloud-lock me-1"></i> Backblaze B2 Stream</span>
+            <span class="badge bg-info px-3 py-1 mb-2"><i class="ti ti-player-play me-1"></i> HD Stream</span>
             {% endif %}
             <span class="badge bg-primary px-3 py-1 mb-2">{{ movie.category_name|default:"Cinema" }}</span>
           </div>
@@ -137,9 +157,16 @@
         <form method="POST" class="mb-4 p-3 rounded" style="background: var(--cp-bg-card-hover); border: 1px solid var(--cp-border);">
           {% csrf_token %}
           <h6 class="fw-semibold mb-2">Leave a Review</h6>
+          {% if request.user.is_authenticated %}
+          <div class="mb-3 d-flex align-items-center gap-2 text-white">
+            <span class="badge bg-success p-1 rounded-circle"><i class="ti ti-check text-white"></i></span>
+            <span>Posting as <strong>{{ request.user.get_full_name|default:request.user.username }}</strong></span>
+          </div>
+          {% else %}
           <div class="mb-3">
             <input type="text" name="author_name" class="form-control" placeholder="Your Name" required />
           </div>
+          {% endif %}
           <div class="mb-3">
             <textarea name="comment" rows="3" class="form-control" placeholder="Share your thoughts about this movie..." required></textarea>
           </div>
@@ -158,7 +185,7 @@
                 <span class="badge bg-primary p-2 rounded-circle">
                   <i class="ti ti-user text-white"></i>
                 </span>
-                <span class="fw-semibold" style="color: var(--cp-text-primary);">{{ cmt.author_name|default:"Audience Member" }}</span>
+                <span class="fw-semibold" style="color: var(--cp-text-primary);">{{ cmt.display_author }}</span>
               </div>
               <small class="text-muted">{{ cmt.created_at|date:"M d, Y"|default:"Verified Viewer" }}</small>
             </div>

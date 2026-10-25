@@ -18,8 +18,8 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <!-- Navigation Links: Start -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
+        <!-- Navigation Links: Start (Centered) -->
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 align-items-lg-center justify-content-center">
           <li class="nav-item">
             <a class="nav-link px-3" aria-current="page" href="{% url 'movie_landing' %}">
               <i class="ti ti-home me-1"></i> Home
@@ -57,34 +57,21 @@
         </ul>
         <!-- Navigation Links: End -->
 
-        <!-- Search Bar with Live Suggestions: Start -->
-        <div class="position-relative me-3 my-2 my-lg-0" style="min-width: 270px;">
-          <form method="GET" action="{% url 'movie_catalog' %}" class="d-flex align-items-center">
-            <div class="input-group">
-              <span class="input-group-text"><i class="ti ti-search"></i></span>
-              <input type="text" id="navbarSearchInput" name="q" class="form-control" placeholder="Search 2,780+ movies..." autocomplete="off" />
-            </div>
-          </form>
-          <div id="liveSearchResults" class="dropdown-menu shadow-xl w-100 p-2 mt-1 position-absolute d-none" style="max-height: 380px; overflow-y: auto; z-index: 1090;">
-          </div>
-        </div>
-        <!-- Search Bar: End -->
-
         <!-- Right Side Controls: Theme Switcher & Actions -->
         <div class="d-flex align-items-center gap-2">
           <!-- Dark / Light Mode Switcher Button -->
           <button type="button" id="themeToggleBtn" class="theme-toggle-btn shadow-sm" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
-            <i class="ti ti-moon" id="themeToggleIcon"></i>
+            <i class="ti ti-moon fs-5 text-white" id="themeToggleIcon"></i>
           </button>
 
           {% if request.user.is_authenticated %}
             <!-- User Dropdown Menu -->
             <div class="dropdown">
-              <button class="btn btn-sm btn-outline-primary dropdown-toggle d-flex align-items-center gap-2 py-1 px-2" type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-sm dropdown-toggle d-flex align-items-center gap-2 py-1 px-3 cinema-user-btn" type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #090d16 !important; border: 1px solid rgba(255, 255, 255, 0.25) !important; color: #ffffff !important;">
                 <span class="badge bg-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
                   <i class="ti ti-user fs-6 text-white"></i>
                 </span>
-                <span class="fw-semibold d-none d-md-inline" style="color: var(--cp-text-primary);">
+                <span class="fw-semibold d-none d-md-inline text-white" style="color: #ffffff !important;">
                   {{ request.user.first_name|default:request.user.username|truncatechars:15 }}
                 </span>
               </button>
@@ -154,7 +141,7 @@
       document.documentElement.classList.add('light-style');
       document.documentElement.classList.remove('dark-style');
       if (icon) {
-        icon.className = 'ti ti-moon text-dark fs-5';
+        icon.className = 'ti ti-moon text-white fs-5';
       }
       if (toggleBtn) {
         toggleBtn.setAttribute('title', 'Switch to Dark Mode');

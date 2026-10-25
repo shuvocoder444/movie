@@ -17,7 +17,8 @@ from .views import (
 urlpatterns = [
     path("", MovieLandingView.as_view(), name="movie_landing"),
     path("movies/", MovieCatalogView.as_view(), name="movie_catalog"),
-    path("movies/<int:pk>/", MovieDetailView.as_view(), name="movie_detail"),
+    path("movies/<int:pk>/", MovieDetailView.as_view(), name="movie_detail_by_id"),
+    path("movies/<slug:slug>/", MovieDetailView.as_view(), name="movie_detail"),
     path("movies/<int:pk>/<slug:slug>/", MovieDetailView.as_view(), name="movie_detail_slug"),
     path("creators/", CreatorListView.as_view(), name="creator_list"),
     path("creators/<int:pk>/", CreatorDetailView.as_view(), name="creator_detail"),

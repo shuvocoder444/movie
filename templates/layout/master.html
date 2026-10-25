@@ -9,10 +9,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    {% block meta_tags %}
     <meta name="description" content="{% get_theme_variables 'template_description' %}" />
     <meta name="keywords" content="{% get_theme_variables 'template_keyword' %}" />
     <!-- Canonical SEO -->
     <link rel="canonical" href="{% get_theme_variables 'product_page' %}">
+    {% endblock meta_tags %}
     <!-- Favicon -->
     {% if site_settings and site_settings.favicon %}
     <link rel="shortcut icon" type="image/x-icon" href="{{ site_settings.favicon.url }}" />
